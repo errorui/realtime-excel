@@ -12,7 +12,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inknut.className}>{children}</body>
+      <body >{children}</body>
     </html>
   );
 }
