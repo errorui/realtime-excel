@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import SpreadSheetNavbar from "./SpreadSheetNavbar";
-
+import { HexColorPicker } from "react-colorful";
 const Spreadsheet = () => {
   const [cells, setCells] = useState(() =>
     Array(100)
@@ -20,8 +20,15 @@ const Spreadsheet = () => {
     start: null,
     end: null,
   });
+  const [cellColors, setCellColors] = useState(
+    Array(100).fill().map(() =>
+      Array(26).fill('')
+    )
+  );
+  
   const [isSelecting, setIsSelecting] = useState(false);
-
+  const [colorPickerVisible, setColorPickerVisible] = useState(false);
+  const [currentColor, setCurrentColor] = useState("#ffffff");
   const inputRefs = useRef([]);
 
   useEffect(() => {
@@ -97,7 +104,7 @@ const Spreadsheet = () => {
     setSelectedCells({ start: null, end: null });
     setIsSelecting(false);
   };
-
+  
   const handleChange = (e, rowIndex, colIndex) => {
     const newCells = cells.map((row, rIndex) =>
       row.map((cell, cIndex) =>
@@ -136,8 +143,35 @@ const Spreadsheet = () => {
 
     return rowIndex >= startRow && rowIndex <= endRow && colIndex >= startCol && colIndex <= endCol;
   };
-
-  const applyFormattingToSelectedCells = (updateFn) => {
+  // const applyFormattingToSelectedCells = (updateFn, updateColor) => {
+  //   const newCells = cells.map((row, rowIndex) =>
+  //     row.map((cell, colIndex) => {
+  //       if (
+  //         rowIndex >= selectedCells.start.rowIndex &&
+  //         rowIndex <= selectedCells.end.rowIndex &&
+  //         colIndex >= selectedCells.start.colIndex &&
+  //         colIndex <= selectedCells.end.colIndex
+  //       ) {
+  //         const updatedCell = updateFn(cell);
+  //         if (updateColor) {
+  //           setCellColors((prev) =>
+  //             prev.map((row, rIndex) =>
+  //               row.map((color, cIndex) =>
+  //                 rIndex === rowIndex && cIndex === colIndex
+  //                   ? updateColor
+  //                   : color
+  //               )
+  //             )
+  //           );
+  //         }
+  //         return updatedCell;
+  //       }
+  //       return cell;
+  //     })
+  //   );
+  //   setCells(newCells);
+  // };
+  const applyFormattingToSelectedCells = (updateFn, updateColor) => {
     const newCells = cells.map((row, rowIndex) =>
       row.map((cell, colIndex) => {
         if (
@@ -146,14 +180,26 @@ const Spreadsheet = () => {
           colIndex >= selectedCells.start.colIndex &&
           colIndex <= selectedCells.end.colIndex
         ) {
-          return updateFn(cell);
+          const updatedCell = updateFn(cell);
+          if (updateColor) {
+            setCellColors((prev) =>
+              prev.map((row, rIndex) =>
+                row.map((color, cIndex) =>
+                  rIndex === rowIndex && cIndex === colIndex
+                    ? updateColor
+                    : color
+                )
+              )
+            );
+          }
+          return updatedCell;
         }
         return cell;
       })
     );
     setCells(newCells);
   };
-
+  
   const handleBold = () => {
     applyFormattingToSelectedCells((cell) => ({
       ...cell,
@@ -174,7 +220,18 @@ const Spreadsheet = () => {
       underline: !cell.underline,
     }));
   };
+  const handleCellColor = () => {
+    setColorPickerVisible(!colorPickerVisible);
+  };
 
+  useEffect(() => {
+    if (colorPickerVisible) {
+      applyFormattingToSelectedCells((cell) => cell, currentColor);
+    }
+  }, [currentColor]);
+  const toggleColorPicker = () => {
+    setColorPickerVisible(!colorPickerVisible);
+  };
   const handleFilter = () => {
     console.log("Filter clicked");
   };
@@ -199,9 +256,15 @@ const Spreadsheet = () => {
     console.log("Merge Cells clicked");
   };
 
-  const handleCellColor = () => {
-    console.log("Cell Color clicked");
-  };
+  // const handleCellColor = () => {
+  //   // Here, you would typically show a color picker to get the desired color.
+  //   // For simplicity, let's use a prompt to get the color value.
+  //   const color = prompt("Enter a color value (e.g., #ff0000 or red):");
+  //   if (color) {
+  //     applyFormattingToSelectedCells((cell) => cell, color);
+  //   }
+  // };
+  
 
   const handleSave = () => {
     console.log("Save clicked");
@@ -269,37 +332,45 @@ const Spreadsheet = () => {
                 </th>
                 {row.map((cell, colIndex) => (
                   <td
-                    key={colIndex}
-                    className={`border border-gray-300 p-1 w-20 h-8 ${
-                      isSelected(rowIndex, colIndex) ? "bg-blue-200" : ""
+                  key={colIndex}
+                  className={`border border-gray-300 p-1 w-20 h-8 z-1000 ${
+                    isSelected(rowIndex, colIndex) ? "bg-blue-200" : ""
+                  }`}
+                  style={{ backgroundColor: cellColors[rowIndex][colIndex] }}
+                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                  onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                >
+                  <input
+                    type="text"
+                    value={cell.value}
+                    onChange={(e) => handleChange(e, rowIndex, colIndex)}
+                    onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                    className={`w-full h-full text-left bg-transparent focus:outline-none ${
+                      cell.bold ? "font-bold" : ""
+                    } ${
+                      cell.italic ? "italic" : ""
+                    } ${
+                      cell.underline ? "underline" : ""
                     }`}
-                    onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                    onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-                  >
-                    <input
-                      type="text"
-                      value={cell.value}
-                      onChange={(e) => handleChange(e, rowIndex, colIndex)}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                      className={`w-full h-full text-left bg-transparent focus:outline-none ${
-                        cell.bold ? "font-bold" : ""
-                      } ${
-                        cell.italic ? "italic" : ""
-                      } ${
-                        cell.underline ? "underline" : ""
-                      }`}
-                      ref={(el) =>
-                        (inputRefs.current[
-                          rowIndex * cells[0].length + colIndex
-                        ] = el)
-                      }
-                    />
-                  </td>
+                    ref={(el) =>
+                      (inputRefs.current[rowIndex * cells[0].length + colIndex] = el)
+                    }
+                  />
+                </td>
+                
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
+        {colorPickerVisible && (
+          <div className="absolute top-0 right-0 p-4">
+            <HexColorPicker
+              color={currentColor}
+              onChange={setCurrentColor}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
