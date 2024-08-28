@@ -143,34 +143,6 @@ const Spreadsheet = () => {
 
     return rowIndex >= startRow && rowIndex <= endRow && colIndex >= startCol && colIndex <= endCol;
   };
-  // const applyFormattingToSelectedCells = (updateFn, updateColor) => {
-  //   const newCells = cells.map((row, rowIndex) =>
-  //     row.map((cell, colIndex) => {
-  //       if (
-  //         rowIndex >= selectedCells.start.rowIndex &&
-  //         rowIndex <= selectedCells.end.rowIndex &&
-  //         colIndex >= selectedCells.start.colIndex &&
-  //         colIndex <= selectedCells.end.colIndex
-  //       ) {
-  //         const updatedCell = updateFn(cell);
-  //         if (updateColor) {
-  //           setCellColors((prev) =>
-  //             prev.map((row, rIndex) =>
-  //               row.map((color, cIndex) =>
-  //                 rIndex === rowIndex && cIndex === colIndex
-  //                   ? updateColor
-  //                   : color
-  //               )
-  //             )
-  //           );
-  //         }
-  //         return updatedCell;
-  //       }
-  //       return cell;
-  //     })
-  //   );
-  //   setCells(newCells);
-  // };
   const applyFormattingToSelectedCells = (updateFn, updateColor) => {
     const newCells = cells.map((row, rowIndex) =>
       row.map((cell, colIndex) => {
@@ -255,24 +227,36 @@ const Spreadsheet = () => {
   const handleMergeCells = () => {
     console.log("Merge Cells clicked");
   };
-
-  // const handleCellColor = () => {
-  //   // Here, you would typically show a color picker to get the desired color.
-  //   // For simplicity, let's use a prompt to get the color value.
-  //   const color = prompt("Enter a color value (e.g., #ff0000 or red):");
-  //   if (color) {
-  //     applyFormattingToSelectedCells((cell) => cell, color);
-  //   }
-  // };
   
 
   const handleSave = () => {
     console.log("Save clicked");
   };
-
   const handleExport = () => {
-    console.log("Export clicked");
+    const rows = cells.map(row => 
+      row.map(cell => `"${cell.value.replace(/"/g, '""')}"`).join(',')
+    );
+    const csvContent = rows.join('\n');
+  
+    // Create a blob with the CSV content
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+  
+    // Create a link element and trigger download
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "spreadsheet_data.csv");
+  
+    // Append to the document and trigger click to download
+    document.body.appendChild(link);
+    link.click();
+  
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
+  
+  
 
   const handleRowHeaderClick = (rowIndex) => {
     setSelectedCells({
