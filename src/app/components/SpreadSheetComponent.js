@@ -6,7 +6,14 @@ const Spreadsheet = () => {
   const [cells, setCells] = useState(() =>
     Array(100)
       .fill()
-      .map(() => Array(26).fill(""))
+      .map(() =>
+        Array(26).fill({
+          value: "",
+          bold: false,
+          italic: false,
+          underline: false,
+        })
+      )
   );
 
   const [selectedCells, setSelectedCells] = useState({
@@ -46,7 +53,9 @@ const Spreadsheet = () => {
             const result = eval(expression);
             const newCells = cells.map((row, rIndex) =>
               row.map((cell, cIndex) =>
-                rIndex === rowIndex && cIndex === colIndex ? result : cell
+                rIndex === rowIndex && cIndex === colIndex
+                  ? { ...cell, value: result }
+                  : cell
               )
             );
             setCells(newCells);
@@ -92,7 +101,9 @@ const Spreadsheet = () => {
   const handleChange = (e, rowIndex, colIndex) => {
     const newCells = cells.map((row, rIndex) =>
       row.map((cell, cIndex) =>
-        rIndex === rowIndex && cIndex === colIndex ? e.target.value : cell
+        rIndex === rowIndex && cIndex === colIndex
+          ? { ...cell, value: e.target.value }
+          : cell
       )
     );
     setCells(newCells);
@@ -126,7 +137,80 @@ const Spreadsheet = () => {
     return rowIndex >= startRow && rowIndex <= endRow && colIndex >= startCol && colIndex <= endCol;
   };
 
-  // New handlers for row and column header clicks
+  const applyFormattingToSelectedCells = (updateFn) => {
+    const newCells = cells.map((row, rowIndex) =>
+      row.map((cell, colIndex) => {
+        if (
+          rowIndex >= selectedCells.start.rowIndex &&
+          rowIndex <= selectedCells.end.rowIndex &&
+          colIndex >= selectedCells.start.colIndex &&
+          colIndex <= selectedCells.end.colIndex
+        ) {
+          return updateFn(cell);
+        }
+        return cell;
+      })
+    );
+    setCells(newCells);
+  };
+
+  const handleBold = () => {
+    applyFormattingToSelectedCells((cell) => ({
+      ...cell,
+      bold: !cell.bold,
+    }));
+  };
+
+  const handleItalic = () => {
+    applyFormattingToSelectedCells((cell) => ({
+      ...cell,
+      italic: !cell.italic,
+    }));
+  };
+
+  const handleUnderline = () => {
+    applyFormattingToSelectedCells((cell) => ({
+      ...cell,
+      underline: !cell.underline,
+    }));
+  };
+
+  const handleFilter = () => {
+    console.log("Filter clicked");
+  };
+
+  const handleSortAsc = () => {
+    console.log("Sort Asc clicked");
+  };
+
+  const handleSortDesc = () => {
+    console.log("Sort Desc clicked");
+  };
+
+  const handleAddRowColumn = () => {
+    console.log("Add Row/Column clicked");
+  };
+
+  const handleDeleteRowColumn = () => {
+    console.log("Delete Row/Column clicked");
+  };
+
+  const handleMergeCells = () => {
+    console.log("Merge Cells clicked");
+  };
+
+  const handleCellColor = () => {
+    console.log("Cell Color clicked");
+  };
+
+  const handleSave = () => {
+    console.log("Save clicked");
+  };
+
+  const handleExport = () => {
+    console.log("Export clicked");
+  };
+
   const handleRowHeaderClick = (rowIndex) => {
     setSelectedCells({
       start: { rowIndex, colIndex: 0 },
@@ -141,66 +225,6 @@ const Spreadsheet = () => {
     });
   };
 
-  // Handler functions for navbar actions
-  const handleFilter = () => {
-    // Add your filter logic here
-    console.log("Filter clicked");
-  };
-
-  const handleSortAsc = () => {
-    // Add your sort ascending logic here
-    console.log("Sort Asc clicked");
-  };
-
-  const handleSortDesc = () => {
-    // Add your sort descending logic here
-    console.log("Sort Desc clicked");
-  };
-
-  const handleAddRowColumn = () => {
-    // Add your add row/column logic here
-    console.log("Add Row/Column clicked");
-  };
-
-  const handleDeleteRowColumn = () => {
-    // Add your delete row/column logic here
-    console.log("Delete Row/Column clicked");
-  };
-
-  const handleMergeCells = () => {
-    // Add your merge cells logic here
-    console.log("Merge Cells clicked");
-  };
-
-  const handleBold = () => {
-    // Add your bold text logic here
-    console.log("Bold clicked");
-  };
-
-  const handleItalic = () => {
-    // Add your italic text logic here
-    console.log("Italic clicked");
-  };
-
-  const handleUnderline = () => {
-    // Add your underline text logic here
-    console.log("Underline clicked");
-  };
-
-  const handleCellColor = () => {
-    // Add your cell color logic here
-    console.log("Cell Color clicked");
-  };
-
-  const handleSave = () => {
-    // Add your save logic here
-    console.log("Save clicked");
-  };
-
-  const handleExport = () => {
-    // Add your export logic here
-    console.log("Export clicked");
-  };
 
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
@@ -254,10 +278,16 @@ const Spreadsheet = () => {
                   >
                     <input
                       type="text"
-                      value={cell}
+                      value={cell.value}
                       onChange={(e) => handleChange(e, rowIndex, colIndex)}
                       onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                      className="w-full h-full text-left bg-transparent focus:outline-none"
+                      className={`w-full h-full text-left bg-transparent focus:outline-none ${
+                        cell.bold ? "font-bold" : ""
+                      } ${
+                        cell.italic ? "italic" : ""
+                      } ${
+                        cell.underline ? "underline" : ""
+                      }`}
                       ref={(el) =>
                         (inputRefs.current[
                           rowIndex * cells[0].length + colIndex
