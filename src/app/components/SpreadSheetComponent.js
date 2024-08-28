@@ -215,13 +215,64 @@ const Spreadsheet = () => {
   const handleSortDesc = () => {
     console.log("Sort Desc clicked");
   };
-
   const handleAddRowColumn = () => {
-    console.log("Add Row/Column clicked");
+    const action = prompt("Add Row or Column? Type 'row' or 'column':").toLowerCase();
+    if (action === 'row') {
+      setCells((prev) => [
+        ...prev,
+        Array(prev[0].length).fill({
+          value: "",
+          bold: false,
+          italic: false,
+          underline: false,
+        })
+      ]);
+      setCellColors((prev) => [
+        ...prev,
+        Array(prev[0].length).fill('')
+      ]);
+    } else if (action === 'column') {
+      setCells((prev) => prev.map(row => [
+        ...row,
+        {
+          value: "",
+          bold: false,
+          italic: false,
+          underline: false,
+        }
+      ]));
+      setCellColors((prev) => prev.map(row => [
+        ...row,
+        ''
+      ]));
+    } else {
+      alert("Invalid input. Please type 'row' or 'column'.");
+    }
   };
-
+  // const handleDeleteRowColumn = () => {
+  //   console.log("Delete Row/Column clicked");
+  // };
   const handleDeleteRowColumn = () => {
-    console.log("Delete Row/Column clicked");
+    const action = prompt("Delete Row or Column? Type 'row' or 'column':").toLowerCase();
+    if (action === 'row') {
+      const rowIndex = parseInt(prompt("Enter the row number to delete (starting from 1):"), 10) - 1;
+      if (rowIndex >= 0 && rowIndex < cells.length) {
+        setCells((prev) => prev.filter((_, index) => index !== rowIndex));
+        setCellColors((prev) => prev.filter((_, index) => index !== rowIndex));
+      } else {
+        alert("Invalid row number.");
+      }
+    } else if (action === 'column') {
+      const colIndex = parseInt(prompt("Enter the column number to delete (starting from 1):"), 10) - 1;
+      if (colIndex >= 0 && colIndex < cells[0].length) {
+        setCells((prev) => prev.map(row => row.filter((_, index) => index !== colIndex)));
+        setCellColors((prev) => prev.map(row => row.filter((_, index) => index !== colIndex)));
+      } else {
+        alert("Invalid column number.");
+      }
+    } else {
+      alert("Invalid input. Please type 'row' or 'column'.");
+    }
   };
 
   const handleMergeCells = () => {
