@@ -54,7 +54,7 @@ const AvatarStack = ({ avatars }) => {
         </button>
       )}
 
-      {/* Dropdown for remaining avatars */}
+      
       {showDropdown && remainingAvatars.length > 0 && (
         <div className="absolute top-12 left-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg">
           <ul>
