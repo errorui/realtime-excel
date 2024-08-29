@@ -371,15 +371,18 @@ const Spreadsheet = () => {
       } else {
         alert("Invalid row number.");
       }
-    } else if (action === 'column') {
+    } 
+    else if (action === 'column') {
       const colIndex = parseInt(prompt("Enter the column number to delete (starting from 1):"), 10) - 1;
       if (colIndex >= 0 && colIndex < cells[0].length) {
         setCells((prev) => prev.map(row => row.filter((_, index) => index !== colIndex)));
         setCellColors((prev) => prev.map(row => row.filter((_, index) => index !== colIndex)));
+        setColumnSize(columnSize-1);
       } else {
         alert("Invalid column number.");
       }
-    } else {
+    } 
+    else {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
   };
