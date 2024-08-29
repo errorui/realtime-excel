@@ -209,12 +209,54 @@ const Spreadsheet = () => {
   };
 
   const handleSortAsc = () => {
-    console.log("Sort Asc clicked");
+    if (selectedCells.start && selectedCells.end) {
+      // Determine the column to sort by (using the starting cell's column index)
+      const sortColIndex = selectedCells.start.colIndex;
+  
+      // Extract rows and sort them based on the values in the selected column
+      const sortedCells = [...cells].sort((rowA, rowB) => {
+        const valA = rowA[sortColIndex].value || ""; // Handle empty cells
+        const valB = rowB[sortColIndex].value || "";
+        
+        if (!isNaN(valA) && !isNaN(valB)) {
+          return parseFloat(valA) - parseFloat(valB); // Numeric comparison
+        }
+        
+        return valA.localeCompare(valB); // String comparison
+      });
+  
+      // Update the cells state with the sorted rows
+      setCells(sortedCells);
+    } else {
+      alert("Please select a column to sort by.");
+    }
   };
+  
 
   const handleSortDesc = () => {
-    console.log("Sort Desc clicked");
+    if (selectedCells.start && selectedCells.end) {
+      // Determine the column to sort by (using the starting cell's column index)
+      const sortColIndex = selectedCells.start.colIndex;
+  
+      // Extract rows and sort them based on the values in the selected column
+      const sortedCells = [...cells].sort((rowA, rowB) => {
+        const valA = rowA[sortColIndex].value || ""; // Handle empty cells
+        const valB = rowB[sortColIndex].value || "";
+        
+        if (!isNaN(valA) && !isNaN(valB)) {
+          return parseFloat(valB) - parseFloat(valA); // Numeric comparison, reversed for descending
+        }
+        
+        return valB.localeCompare(valA); // String comparison, reversed for descending
+      });
+  
+      // Update the cells state with the sorted rows
+      setCells(sortedCells);
+    } else {
+      alert("Please select a column to sort by.");
+    }
   };
+  
   const handleAddRowColumn = () => {
     const action = prompt("Add Row or Column? Type 'row' or 'column':").toLowerCase();
     if (action === 'row') {
@@ -248,10 +290,7 @@ const Spreadsheet = () => {
     } else {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
-  };
-  // const handleDeleteRowColumn = () => {
-  //   console.log("Delete Row/Column clicked");
-  // };
+  }; 
   const handleDeleteRowColumn = () => {
     const action = prompt("Delete Row or Column? Type 'row' or 'column':").toLowerCase();
     if (action === 'row') {
@@ -273,10 +312,6 @@ const Spreadsheet = () => {
     } else {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
-  };
-
-  const handleMergeCells = () => {
-    console.log("Merge Cells clicked");
   };
   
 
@@ -332,7 +367,6 @@ const Spreadsheet = () => {
         onSortDesc={handleSortDesc}
         onAddRowColumn={handleAddRowColumn}
         onDeleteRowColumn={handleDeleteRowColumn}
-        onMergeCells={handleMergeCells}
         onBold={handleBold}
         onItalic={handleItalic}
         onUnderline={handleUnderline}

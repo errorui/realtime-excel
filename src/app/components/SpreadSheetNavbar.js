@@ -70,16 +70,6 @@ const SpreadSheetNavbar = ({
         <AiOutlineMinus className="text-base" />
         <span className="hidden md:inline">Delete Row/Column</span>
       </button>
-      
-      {/* Merge Cells */}
-      <button
-        className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
-        onClick={onMergeCells}
-      >
-        <AiOutlineMergeCells className="text-base" />
-        <span className="hidden md:inline">Merge Cells</span>
-      </button>
-      
       {/* Text Formatting */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
