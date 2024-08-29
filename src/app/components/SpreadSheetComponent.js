@@ -15,6 +15,7 @@ const Spreadsheet = () => {
         })
       )
   );
+  const [columnSize, setColumnSize]= useState(26);
 
   const [selectedCells, setSelectedCells] = useState({
     start: null,
@@ -280,6 +281,7 @@ const Spreadsheet = () => {
       // Determine the column to sort by (using the starting cell's column index)
       const sortColIndex = selectedCells.start.colIndex;
       // Extract rows and sort them based on the values in the selected column
+      // console.log(cells);
       const sortedCells = [...cells].sort((rowA, rowB) => {
         const valA = rowA[sortColIndex].value || ""; // Handle empty cells
         const valB = rowB[sortColIndex].value || "";
@@ -287,8 +289,7 @@ const Spreadsheet = () => {
         if (!isNaN(valA) && !isNaN(valB)) {
           return parseFloat(valA) - parseFloat(valB); // Numeric comparison
         }
-
-        return valA.localeCompare(valB); // String comparison
+        return valA.localeCompare(valB);
       });
 
       // Update the cells state with the sorted rows
@@ -317,6 +318,7 @@ const Spreadsheet = () => {
       });
 
       // Update the cells state with the sorted rows
+      // console.log(sortedCells);
       setCells(sortedCells);
     } else {
       alert("Please select a column to sort by.");
@@ -353,7 +355,9 @@ const Spreadsheet = () => {
         ...row,
         ''
       ]));
-    } else {
+      setColumnSize(columnSize+1);
+    } 
+    else {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
   };
@@ -419,6 +423,7 @@ const Spreadsheet = () => {
   };
 
   const handleColumnHeaderClick = (colIndex) => {
+    console.log(colIndex);
     setSelectedCells({
       start: { rowIndex: 0, colIndex },
       end: { rowIndex: cells.length - 1, colIndex },
@@ -446,7 +451,7 @@ const Spreadsheet = () => {
           <thead>
             <tr>
               <th className="border border-gray-300 p-1 bg-gray-100 w-20 h-8"></th>
-              {Array.from({ length: 26 }, (_, i) => (
+              {Array.from({ length: columnSize }, (_, i) => (
                 <th
                   key={i}
                   className="border border-gray-300 p-1 text-gray-700 bg-gray-100 w-20 h-8 cursor-pointer"
