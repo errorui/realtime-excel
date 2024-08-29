@@ -25,15 +25,14 @@ const Spreadsheet = () => {
       Array(26).fill('')
     )
   );
-  
   const [isSelecting, setIsSelecting] = useState(false);
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
   const [currentColor, setCurrentColor] = useState("#ffffff");
   const inputRefs = useRef([]);
 
-  useEffect(() => {
-    console.log("Selected cells:", selectedCells);
-  }, [selectedCells]);
+  // useEffect(() => {
+  //   console.log("Selected cells:", selectedCells);
+  // }, [selectedCells]);
 
   const handleKeyDown = (e, rowIndex, colIndex) => {
     const input = e.target;
@@ -104,7 +103,7 @@ const Spreadsheet = () => {
     setSelectedCells({ start: null, end: null });
     setIsSelecting(false);
   };
-  
+
   const handleChange = (e, rowIndex, colIndex) => {
     const newCells = cells.map((row, rIndex) =>
       row.map((cell, cIndex) =>
@@ -171,7 +170,7 @@ const Spreadsheet = () => {
     );
     setCells(newCells);
   };
-  
+
   const handleBold = () => {
     applyFormattingToSelectedCells((cell) => ({
       ...cell,
@@ -204,59 +203,126 @@ const Spreadsheet = () => {
   const toggleColorPicker = () => {
     setColorPickerVisible(!colorPickerVisible);
   };
-  const handleFilter = () => {
-    console.log("Filter clicked");
-  };
 
+
+
+  // const handleFilter = () => {
+  //   console.log("Filter clicked");
+  // };
+
+
+
+  const handleFilter = () => {
+    // Prompt the user for filter parameters
+    const colIndex = parseInt(prompt("Enter the column number to filter (starting from 1):"), 10) - 1;
+    const operator = prompt("Enter the operator for filtering (>, >=, <, <=, = ):").trim();
+    const value = prompt("Enter the value to filter by:").trim();
+  
+    // Validate input
+    if (isNaN(colIndex) || colIndex < 0 || colIndex >= cells[0].length) {
+      alert("Invalid column number.");
+      return;
+    }
+  
+    const validOperators = [">", "<", "=", ">=", "<="];
+    if (!validOperators.includes(operator)) {
+      alert("Invalid operator. Please enter one of: >, <, =, >=, <=");
+      return;
+    }
+  
+    // Convert the value to a number if possible (useful for numeric comparisons)
+    const filterValue = isNaN(value) ? value : parseFloat(value);
+  
+    // Apply the filter and highlight cells
+    const newCellColors = cellColors.map(row =>
+      row.map(() => "")
+    );
+  
+    const newCells = cells.map((row, rowIndex) =>
+      row.map((cell, colIndex) => {
+        if (colIndex === colIndex) { // Apply filter only to the selected column
+          let meetsCondition = false;
+  
+          switch (operator) {
+            case ">":
+              meetsCondition = (isNaN(cell.value) ? false : parseFloat(cell.value) > filterValue);
+              break;
+            case "<":
+              meetsCondition = (isNaN(cell.value) ? false : parseFloat(cell.value) < filterValue);
+              break;
+            case "=":
+              meetsCondition = (cell.value === filterValue);
+              break;
+            case ">=":
+              meetsCondition = (isNaN(cell.value) ? false : parseFloat(cell.value) >= filterValue);
+              break;
+            case "<=":
+              meetsCondition = (isNaN(cell.value) ? false : parseFloat(cell.value) <= filterValue);
+              break;
+            default:
+              meetsCondition = false;
+              break;
+          }
+  
+          if (meetsCondition) {
+            newCellColors[rowIndex][colIndex] = "#ffeb3b"; // Highlight color (yellow)
+          }
+        }
+        return cell;
+      })
+    );
+  
+    setCellColors(newCellColors);
+  };
+  
   const handleSortAsc = () => {
     if (selectedCells.start && selectedCells.end) {
       // Determine the column to sort by (using the starting cell's column index)
       const sortColIndex = selectedCells.start.colIndex;
-  
       // Extract rows and sort them based on the values in the selected column
       const sortedCells = [...cells].sort((rowA, rowB) => {
         const valA = rowA[sortColIndex].value || ""; // Handle empty cells
         const valB = rowB[sortColIndex].value || "";
-        
+
         if (!isNaN(valA) && !isNaN(valB)) {
           return parseFloat(valA) - parseFloat(valB); // Numeric comparison
         }
-        
+
         return valA.localeCompare(valB); // String comparison
       });
-  
+
       // Update the cells state with the sorted rows
       setCells(sortedCells);
     } else {
       alert("Please select a column to sort by.");
     }
   };
-  
+
 
   const handleSortDesc = () => {
     if (selectedCells.start && selectedCells.end) {
       // Determine the column to sort by (using the starting cell's column index)
       const sortColIndex = selectedCells.start.colIndex;
-  
+
       // Extract rows and sort them based on the values in the selected column
       const sortedCells = [...cells].sort((rowA, rowB) => {
         const valA = rowA[sortColIndex].value || ""; // Handle empty cells
         const valB = rowB[sortColIndex].value || "";
-        
+
         if (!isNaN(valA) && !isNaN(valB)) {
           return parseFloat(valB) - parseFloat(valA); // Numeric comparison, reversed for descending
         }
-        
+
         return valB.localeCompare(valA); // String comparison, reversed for descending
       });
-  
+
       // Update the cells state with the sorted rows
       setCells(sortedCells);
     } else {
       alert("Please select a column to sort by.");
     }
   };
-  
+
   const handleAddRowColumn = () => {
     const action = prompt("Add Row or Column? Type 'row' or 'column':").toLowerCase();
     if (action === 'row') {
@@ -290,7 +356,7 @@ const Spreadsheet = () => {
     } else {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
-  }; 
+  };
   const handleDeleteRowColumn = () => {
     const action = prompt("Delete Row or Column? Type 'row' or 'column':").toLowerCase();
     if (action === 'row') {
@@ -313,36 +379,37 @@ const Spreadsheet = () => {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
   };
-  
+
 
   const handleSave = () => {
+    console.log(cells);
     console.log("Save clicked");
   };
   const handleExport = () => {
-    const rows = cells.map(row => 
+    const rows = cells.map(row =>
       row.map(cell => `"${cell.value.replace(/"/g, '""')}"`).join(',')
     );
     const csvContent = rows.join('\n');
-  
+
     // Create a blob with the CSV content
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
-  
+
     // Create a link element and trigger download
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", "spreadsheet_data.csv");
-  
+
     // Append to the document and trigger click to download
     document.body.appendChild(link);
     link.click();
-  
+
     // Clean up
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
   };
-  
-  
+
+
 
   const handleRowHeaderClick = (rowIndex) => {
     setSelectedCells({
@@ -375,7 +442,7 @@ const Spreadsheet = () => {
         onExport={handleExport}
       />
       <div className="min-w-max">
-        <table className="border-collapse border border-gray-300">
+        <table className="border-collapse border border-gray-300" id='myTable'>
           <thead>
             <tr>
               <th className="border border-gray-300 p-1 bg-gray-100 w-20 h-8"></th>
@@ -401,32 +468,28 @@ const Spreadsheet = () => {
                 </th>
                 {row.map((cell, colIndex) => (
                   <td
-                  key={colIndex}
-                  className={`border border-gray-300 p-1 w-20 h-8 z-1000 ${
-                    isSelected(rowIndex, colIndex) ? "bg-blue-200" : ""
-                  }`}
-                  style={{ backgroundColor: cellColors[rowIndex][colIndex] }}
-                  onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                  onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-                >
-                  <input
-                    type="text"
-                    value={cell.value}
-                    onChange={(e) => handleChange(e, rowIndex, colIndex)}
-                    onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                    className={`w-full h-full text-left bg-transparent focus:outline-none ${
-                      cell.bold ? "font-bold" : ""
-                    } ${
-                      cell.italic ? "italic" : ""
-                    } ${
-                      cell.underline ? "underline" : ""
-                    }`}
-                    ref={(el) =>
-                      (inputRefs.current[rowIndex * cells[0].length + colIndex] = el)
-                    }
-                  />
+                    key={colIndex}
+                    className={`border border-gray-300 p-1 w-20 h-8 z-1000 ${isSelected(rowIndex, colIndex) ? "bg-blue-200" : ""
+                      }`}
+                    style={{ backgroundColor: cellColors[rowIndex][colIndex] }}
+                    onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
+                    onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
+                  >
+                    <input
+                      type="text"
+                      value={cell.value}
+                      onChange={(e) => handleChange(e, rowIndex, colIndex)}
+                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
+                      className={`w-full h-full text-left bg-transparent focus:outline-none ${cell.bold ? "font-bold" : ""
+                        } ${cell.italic ? "italic" : ""
+                        } ${cell.underline ? "underline" : ""
+                        }`}
+                      ref={(el) =>
+                        (inputRefs.current[rowIndex * cells[0].length + colIndex] = el)
+                      }
+                    />
                 </td>
-                
+
                 ))}
               </tr>
             ))}
