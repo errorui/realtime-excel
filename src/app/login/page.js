@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-const API_URL = "http://localhost:4002"; 
+const API_URL = "https://excel-auth.onrender.com"; 
 
 const page = () => {
   const [email, setEmail] = useState("");
