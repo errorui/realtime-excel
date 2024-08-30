@@ -30,11 +30,14 @@ const Spreadsheet = () => {
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
   const [currentColor, setCurrentColor] = useState("#ffffff");
   const inputRefs = useRef([]);
-
+  const [showChart, setShowChart] = useState(false);
   // useEffect(() => {
   //   console.log("Selected cells:", selectedCells);
   // }, [selectedCells]);
-
+  const toggleChart = () => {
+    console.log('Toggle chart')
+    setShowChart(!showChart);
+  };
   const handleKeyDown = (e, rowIndex, colIndex) => {
     const input = e.target;
     const { selectionStart, selectionEnd, value } = input;
@@ -87,7 +90,6 @@ const Spreadsheet = () => {
       default:
         return;
     }
-
     if (
       nextRow >= 0 &&
       nextRow < cells.length &&
@@ -433,7 +435,6 @@ const Spreadsheet = () => {
     });
   };
 
-
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
       <SpreadSheetNavbar
@@ -511,6 +512,7 @@ const Spreadsheet = () => {
             />
           </div>
         )}
+        {showChart && <SpreadsheetChart data={cells} />} 
       </div>
     </div>
   );
