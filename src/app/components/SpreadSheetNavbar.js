@@ -19,9 +19,10 @@ const SpreadSheetNavbar = ({
   onFilter,
   onSortAsc,
   onSortDesc,
-  onAddRowColumn,
-  onDeleteRowColumn,
-  onMergeCells,
+  onAddRow,
+  onAddColumn,
+  onDeleteRow,
+  onDeleteColumn,
   onBold,
   onItalic,
   onUnderline,
@@ -57,20 +58,36 @@ const SpreadSheetNavbar = ({
         <span className="hidden md:inline">Sort Desc</span>
       </button>
 
-      {/* Add/Delete Rows/Columns */}
+      {/* Add Row/Column Buttons */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
-        onClick={onAddRowColumn}
+        onClick={onAddRow}
       >
         <AiOutlinePlus className="text-base" />
-        <span className="hidden md:inline">Add Row/Column</span>
+        <span className="hidden md:inline">Add Row</span>
       </button>
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
-        onClick={onDeleteRowColumn}
+        onClick={onAddColumn}
+      >
+        <AiOutlinePlus className="text-base" />
+        <span className="hidden md:inline">Add Column</span>
+      </button>
+
+      {/* Delete Row/Column Buttons */}
+      <button
+        className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
+        onClick={onDeleteRow}
       >
         <AiOutlineMinus className="text-base" />
-        <span className="hidden md:inline">Delete Row/Column</span>
+        <span className="hidden md:inline">Delete Row</span>
+      </button>
+      <button
+        className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
+        onClick={onDeleteColumn}
+      >
+        <AiOutlineMinus className="text-base" />
+        <span className="hidden md:inline">Delete Column</span>
       </button>
 
       {/* Text Formatting */}
@@ -123,11 +140,13 @@ const SpreadSheetNavbar = ({
 
       {/* Toggle Chart Button with Link */}
       <Link href="/chart">
-      <button className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
-          onClick={onToggleChart}>
-             <AiOutlineMergeCells className="text-base" />
-             <span className="hidden md:inline"> Create Chart</span>
-      </button>
+        <button
+          className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
+          onClick={onToggleChart}
+        >
+          <AiOutlineMergeCells className="text-base" />
+          <span className="hidden md:inline">Create Chart</span>
+        </button>
       </Link>
     </div>
   );

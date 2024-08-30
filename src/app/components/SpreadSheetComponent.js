@@ -49,7 +49,7 @@ const Spreadsheet = () => {
 
   useEffect(() => {
     if (!isSocketUpdate.current) {
-      socket.emit('handletablechange', { cells, cellColors, roomId });
+      socket.emit('handletablechange', { cells, cellColors, roomId, columnSize });
     }
     isSocketUpdate.current = false;
   }, [cells, cellColors, roomId]);
@@ -409,6 +409,37 @@ const Spreadsheet = () => {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
   };
+  const handleAddRow= ()=>{
+    setCells((prev) => [
+      ...prev,
+      Array(prev[0].length).fill({
+        value: "",
+        bold: false,
+        italic: false,
+        underline: false,
+      })
+    ]);
+    setCellColors((prev) => [
+      ...prev,
+      Array(prev[0].length).fill('')
+    ]);
+  }
+  const handleAddColumn= ()=>{
+    setCells((prev) => prev.map(row => [
+      ...row,
+      {
+        value: "",
+        bold: false,
+        italic: false,
+        underline: false,
+      }
+    ]));
+    setCellColors((prev) => prev.map(row => [
+      ...row,
+      ''
+    ]));
+    setColumnSize(columnSize+1);
+  }
   const handleDeleteRowColumn = () => {
     const action = prompt("Delete Row or Column? Type 'row' or 'column':").toLowerCase();
     if (action === 'row') {
@@ -434,8 +465,25 @@ const Spreadsheet = () => {
       alert("Invalid input. Please type 'row' or 'column'.");
     }
   };
-
-
+  const handleDeleteRow= ()=>{
+    const rowIndex = parseInt(prompt("Enter the row number to delete (starting from 1):"), 10) - 1;
+      if (rowIndex >= 0 && rowIndex < cells.length) {
+        setCells((prev) => prev.filter((_, index) => index !== rowIndex));
+        setCellColors((prev) => prev.filter((_, index) => index !== rowIndex));
+      } else {
+        alert("Invalid row number.");
+      } 
+  }
+  const handleDeleteColumn= ()=>{
+    const colIndex = parseInt(prompt("Enter the column number to delete (starting from 1):"), 10) - 1;
+    if (colIndex >= 0 && colIndex < cells[0].length) {
+      setCells((prev) => prev.map(row => row.filter((_, index) => index !== colIndex)));
+      setCellColors((prev) => prev.map(row => row.filter((_, index) => index !== colIndex)));
+      setColumnSize(columnSize-1);
+    } else {
+      alert("Invalid column number.");
+    }
+  }
   const handleSave = () => {
     console.log(cells);
     console.log("Save clicked");
@@ -487,8 +535,10 @@ const Spreadsheet = () => {
         onFilter={handleFilter}
         onSortAsc={handleSortAsc}
         onSortDesc={handleSortDesc}
-        onAddRowColumn={handleAddRowColumn}
-        onDeleteRowColumn={handleDeleteRowColumn}
+        onAddColumn={handleAddColumn}
+        onAddRow={handleAddRow}
+        onDeleteColumn={handleDeleteColumn}
+        onDeleteRow={handleDeleteRow}
         onBold={handleBold}
         onItalic={handleItalic}
         onUnderline={handleUnderline}
