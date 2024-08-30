@@ -6,7 +6,8 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../context/auth';
 
-const API_URL = "https://excel-auth.onrender.com"; 
+
+const API_URL = "http://localhost:4002"; 
 
 const page = () => {
   const { user, setUser } = useAuth()
@@ -37,7 +38,7 @@ const page = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2">
       <h1 className="mb-4 text-2xl">Workbench</h1>
-      <CursorTracker></CursorTracker>
+     
       {user ? (
         <div className="text-center">
           <p className="mb-2">Welcome, {user.username}!</p>
