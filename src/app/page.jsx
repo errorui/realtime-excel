@@ -5,7 +5,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="text-white pt-5 gap-y-[50px] flex flex-col items-center w-screen">
+    <main className="text-white pt-5 gap-y-[50px] flex flex-col items-center w-screen ">
       <NavBarHome/>
       <div className="flex w-10/12 gap-x-3 justify-between items-center">
         <div className="w-6/12 border min-w-[750px] border-white">
