@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   AiOutlineFilter,
   AiOutlineSortAscending,
@@ -26,7 +27,8 @@ const SpreadSheetNavbar = ({
   onUnderline,
   onCellColor,
   onSave,
-  onExport
+  onExport,
+  onToggleChart
 }) => {
   return (
     <div className="bg-gray-200 p-2 flex items-center space-x-3 shadow-md">
@@ -38,7 +40,7 @@ const SpreadSheetNavbar = ({
         <AiOutlineFilter className="text-base" />
         <span className="hidden md:inline">Filter</span>
       </button>
-      
+
       {/* Sorting Buttons */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
@@ -54,7 +56,7 @@ const SpreadSheetNavbar = ({
         <AiOutlineSortDescending className="text-base" />
         <span className="hidden md:inline">Sort Desc</span>
       </button>
-      
+
       {/* Add/Delete Rows/Columns */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
@@ -70,6 +72,7 @@ const SpreadSheetNavbar = ({
         <AiOutlineMinus className="text-base" />
         <span className="hidden md:inline">Delete Row/Column</span>
       </button>
+
       {/* Text Formatting */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
@@ -92,7 +95,7 @@ const SpreadSheetNavbar = ({
         <AiOutlineUnderline className="text-base" />
         <span className="hidden md:inline">Underline</span>
       </button>
-      
+
       {/* Cell Color Picker */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
@@ -101,7 +104,7 @@ const SpreadSheetNavbar = ({
         <MdColorLens className="text-base" />
         <span className="hidden md:inline">Cell Color</span>
       </button>
-      
+
       {/* Save/Export Options */}
       <button
         className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
@@ -117,6 +120,15 @@ const SpreadSheetNavbar = ({
         <AiOutlineDownload className="text-base" />
         <span className="hidden md:inline">Export</span>
       </button>
+
+      {/* Toggle Chart Button with Link */}
+      <Link href="/chart">
+      <button className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
+          onClick={onToggleChart}>
+             <AiOutlineMergeCells className="text-base" />
+             <span className="hidden md:inline"> Create Chart</span>
+      </button>
+      </Link>
     </div>
   );
 };
