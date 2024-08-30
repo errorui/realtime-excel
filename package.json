@@ -22,7 +22,8 @@
     "react-resizable": "^3.0.5",
     "react-spreadsheet": "^0.9.5",
     "react-tabular": "^0.0.3",
-    "react-tabulator": "^0.21.0"
+    "react-tabulator": "^0.21.0",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "postcss": "^8",

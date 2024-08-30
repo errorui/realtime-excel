@@ -1,8 +1,13 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import SpreadSheetNavbar from "./SpreadSheetNavbar";
 import { HexColorPicker } from "react-colorful";
+import socket from "./socket";
+
 const Spreadsheet = () => {
+    let roomId="d"
+ 
+  // -s
   const [cells, setCells] = useState(() =>
     Array(100)
       .fill()
@@ -15,21 +20,60 @@ const Spreadsheet = () => {
         })
       )
   );
-  const [columnSize, setColumnSize]= useState(26);
-
-  const [selectedCells, setSelectedCells] = useState({
-    start: null,
-    end: null,
-  });
   const [cellColors, setCellColors] = useState(
     Array(100).fill().map(() =>
       Array(26).fill('')
     )
   );
+   const isSocketUpdate = useRef(false);
+
+  const handleTableUpdate = useCallback((data) => {
+    
+    isSocketUpdate.current = true;
+    setCells(data.cells);
+    setCellColors(data.cellColors);
+  }, []);
+
+  useEffect(() => {
+    if (roomId) {
+      socket.emit('join room', roomId);
+      console.log("joined room");
+    }
+
+    socket.on("table-update", handleTableUpdate);
+
+    return () => {
+      socket.off("table-update", handleTableUpdate);
+    };
+  }, [roomId, handleTableUpdate]);
+
+  useEffect(() => {
+    if (!isSocketUpdate.current) {
+      socket.emit('handletablechange', { cells, cellColors, roomId });
+    }
+    isSocketUpdate.current = false;
+  }, [cells, cellColors, roomId]);
+  // -s
+  const [columnSize, setColumnSize]= useState(26);
+
+
+
+  // no-s
+  const [selectedCells, setSelectedCells] = useState({
+    start: null,
+    end: null,
+  });
+ 
   const [isSelecting, setIsSelecting] = useState(false);
+
   const [colorPickerVisible, setColorPickerVisible] = useState(false);
+
+
   const [currentColor, setCurrentColor] = useState("#ffffff");
+
+
   const inputRefs = useRef([]);
+
 
   // useEffect(() => {
   //   console.log("Selected cells:", selectedCells);
@@ -106,6 +150,8 @@ const Spreadsheet = () => {
   };
 
   const handleChange = (e, rowIndex, colIndex) => {
+   let val=e.target.value;
+    // socket.emit("handle-cell",{rowIndex, colIndex,val})
     const newCells = cells.map((row, rIndex) =>
       row.map((cell, cIndex) =>
         rIndex === rowIndex && cIndex === colIndex
@@ -169,6 +215,7 @@ const Spreadsheet = () => {
         return cell;
       })
     );
+    
     setCells(newCells);
   };
 
