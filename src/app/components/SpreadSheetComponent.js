@@ -4,11 +4,11 @@ import SpreadSheetNavbar from "./SpreadSheetNavbar";
 import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
 import * as XLSX from "xlsx";
+import axios from 'axios';
 const Spreadsheet = ({
   socket,roomId
 }) => {
-   
- 
+  const spreadhsheetid= 'cd068e2a-87e4-4729-873d-217eba2da69b';
   // -s
   const [cells, setCells] = useState(() =>
     Array(100)
@@ -22,6 +22,36 @@ const Spreadsheet = ({
         })
       )
   );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`);
+        
+        // Assuming response.data is a 2D array of numbers
+        const fetchedData = response.data.data;
+        // Create a new array with 100 rows and 26 columns
+        console.log(fetchedData);
+        const paddedData = Array(100).fill().map((_, rowIndex) => 
+          Array(26).fill().map((_, colIndex) => {
+            const value = fetchedData[rowIndex]?.[colIndex] ?? '';
+            return {
+              value: value,
+              bold: false, // Default value, can be customized later
+              italic: false, // Default value, can be customized later
+              underline: false, // Default value, can be customized later
+            };
+          })
+        );
+
+        // Update the cells state with the padded data
+        setCells(paddedData);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchData();
+  }, []); // Empty dependency array to run only on mount
   const [cellColors, setCellColors] = useState(
     Array(100).fill().map(() =>
       Array(26).fill('')
@@ -486,10 +516,29 @@ const Spreadsheet = ({
       alert("Invalid column number.");
     }
   }
-  const handleSave = () => {
-    console.log(cells);
-    console.log("Save clicked");
+  const handleSave = async () => {
+    try {
+      // Transform cells to include only the 'value' property
+      const transformedCells = cells.map(row => 
+        row.map(cell => cell.value)
+      );
+      console.log(transformedCells);
+      // Example data you want to send in the request body
+      const dataToSend = {
+        data: transformedCells,
+        name: 'My Spreadsheet'
+      };
+  
+      // // Send POST request
+      const response = await axios.post(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`, dataToSend);
+      // // Handle success
+      console.log('Data saved successfully:', response.data);
+    } catch (error) {
+      // Handle error
+      console.error('Error saving data:', error);
+    }
   };
+  
   const handleExport = () => {
     const rows = cells.map(row =>
       row.map(cell => `"${cell.value.replace(/"/g, '""')}"`).join(',')
