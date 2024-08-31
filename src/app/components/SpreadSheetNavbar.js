@@ -12,6 +12,7 @@ import {
   AiOutlineUnderline,
   AiOutlineSave,
   AiOutlineDownload,
+  AiOutlineUpload
 } from "react-icons/ai";
 import { MdColorLens } from "react-icons/md";
 import { Tooltip } from 'react-tooltip';
@@ -30,7 +31,8 @@ const SpreadSheetNavbar = ({
   onCellColor,
   onSave,
   onExport,
-  onToggleChart
+  onToggleChart,
+  onImport
 }) => {
   return (
     <div className="bg-gray-200 p-2 flex items-center space-x-3 shadow-md">
@@ -170,6 +172,16 @@ const SpreadSheetNavbar = ({
         <span className="hidden md:inline">Export</span>
       </button>
       <Tooltip id="export-tooltip" content="Export document" />
+
+      <button
+        className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
+        onClick={onImport}
+        data-tooltip-id="import-tooltip"
+      >
+        <AiOutlineUpload className="text-base" />
+        <span className="hidden md:inline">Import</span>
+      </button>
+      <Tooltip id="import-tooltip" content="Import document" />
 
       {/* Toggle Chart Button with Link */}
       <Link href="/chart">

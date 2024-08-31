@@ -3,7 +3,6 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import SpreadSheetNavbar from "./SpreadSheetNavbar";
 import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
-
 const Spreadsheet = () => {
     let roomId="d"
  
@@ -55,8 +54,6 @@ const Spreadsheet = () => {
   }, [cells, cellColors, roomId]);
   // -s
   const [columnSize, setColumnSize]= useState(26);
-
-
 
   // no-s
   const [selectedCells, setSelectedCells] = useState({
@@ -528,7 +525,35 @@ const Spreadsheet = () => {
       end: { rowIndex: cells.length - 1, colIndex },
     });
   };
+  const handleImport = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const text = event.target.result;
+        const rows = text.split("\n"); // Split by newline to get rows
+        const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
 
+        const updatedCells = cells.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+              return {
+                ...cell,
+                value: parsedData[rowIndex][colIndex], // Update the value from CSV
+              };
+            }
+            return cell;
+          })
+        );
+
+        setCells(updatedCells);
+      };
+      reader.readAsText(file);
+    }
+  };
+  const handleFileUpload= ()=>{
+    document.getElementById("fileInput").click();
+  }
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
       <SpreadSheetNavbar
@@ -545,6 +570,7 @@ const Spreadsheet = () => {
         onCellColor={handleCellColor}
         onSave={handleSave}
         onExport={handleExport}
+        onImport={handleFileUpload}
       />
       <div className="min-w-max">
         <table className="border-collapse border border-gray-300" id='myTable'>
@@ -608,7 +634,13 @@ const Spreadsheet = () => {
             />
           </div>
         )}
-        {showChart && <SpreadsheetChart data={cells} />} 
+         <input
+          type="file"
+          id="fileInput"
+          accept=".csv"
+          style={{ display: "none" }}
+          onChange={handleImport}
+        />
       </div>
     </div>
   );
