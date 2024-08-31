@@ -9,6 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/dropdown": "^2.1.29",
+    "axios": "^1.7.6",
+    "framer-motion": "^11.3.31",
+    "lucide-react": "^0.437.0",
     "next": "14.2.6",
     "react": "^18",
     "react-chartjs-2": "^5.2.0",
@@ -21,6 +25,7 @@
     "react-spreadsheet": "^0.9.5",
     "react-tabular": "^0.0.3",
     "react-tabulator": "^0.21.0",
+    "react-toastify": "^10.0.5",
     "react-tooltip": "^5.28.0",
     "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.5.2"

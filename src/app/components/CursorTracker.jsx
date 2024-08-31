@@ -1,13 +1,15 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-import socket from './socket';  // Import the centralized socket
+
 import CursorSVG from './../../../public/assets/Cursor';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useAuth } from '../../../context/auth';
 
-const CursorTracker = ({ roomId }) => {
+const CursorTracker = ({ roomId ,socket,user}) => {
+
   const [cursors, setCursors] = useState([]);
-
+  console.log(user)
   useEffect(() => {
     if (roomId) {
       socket.emit('join room', roomId);
@@ -23,7 +25,7 @@ const CursorTracker = ({ roomId }) => {
     }
 
     const handleCursorUpdate = (data) => {
- 
+     console.log("hello")
       setCursors((prevCursors) => {
         const cursorIndex = prevCursors.findIndex(cursor => cursor.id === data.id);
 
@@ -32,7 +34,7 @@ const CursorTracker = ({ roomId }) => {
           updatedCursors[cursorIndex] = { ...updatedCursors[cursorIndex], x: data.x, y: data.y };
           return updatedCursors;
         } else {
-          return [...prevCursors, { id: data.id, x: data.x, y: data.y, color: getRandomColor() }];
+          return [...prevCursors, { id: data.id, x: data.x, y: data.y, color: getRandomColor(),user:data.user }];
         }
       });
     };
@@ -56,7 +58,7 @@ const CursorTracker = ({ roomId }) => {
 
   useEffect(() => {
     const handleMouseMove = throttle((e) => {
-      socket.emit('cursor-move', { x: e.clientX, y: e.clientY, roomId });
+      socket.emit('cursor-move', { x: e.clientX, y: e.clientY, roomId,user });
     }, 90);
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -83,7 +85,7 @@ const CursorTracker = ({ roomId }) => {
 
   return (
     <>
-      {cursors.map(({ id, x, y, color }) => (
+      {cursors.map(({ id, x, y, color,user }) => (
         <div
           key={id}
           style={{
@@ -93,7 +95,7 @@ const CursorTracker = ({ roomId }) => {
           }}
         >
           <CursorSVG color={color} />
-          <h1>{id}</h1>
+          <h1>{user}</h1>
         </div>
       ))}
     </>

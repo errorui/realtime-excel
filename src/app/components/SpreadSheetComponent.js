@@ -3,8 +3,10 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import SpreadSheetNavbar from "./SpreadSheetNavbar";
 import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
-const Spreadsheet = () => {
-    let roomId="d"
+const Spreadsheet = ({
+  socket,roomId
+}) => {
+   
  
   // -s
   const [cells, setCells] = useState(() =>
