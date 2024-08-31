@@ -9,7 +9,7 @@ import { useRouter, usePathname } from "next/navigation";
 const API_URL = 'http://localhost:4002'
 
 
-const AuthContext = createContext();
+export const AuthContext = createContext();
 
 
 export const AuthProvider = ({ children }) => {

@@ -6,6 +6,7 @@ import React, { useRef, useState } from "react";
 import { useAuth } from "../../../context/auth";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import NavBarHome from "../NavBarHome";
 
 // const API_URL = "https://excel-auth.onrender.com"
 const API_URL = 'http://localhost:4002'
@@ -30,25 +31,28 @@ const page = () => {
 
 
   return (
+    // <div className="flex flex-col items-center justify-center gap-10">
+    //     <div className="w-[98%] min-h-20 backdrop-blur-md bg-[#2a2a2a] rounded-xl flex justify-end items-center p-3">
+    //       <div className="flex gap-4 items-center justify-center">
+    //         <p>User Name</p>
+
+
+    //         <Dropdown>
+    //           <DropdownTrigger>
+    //             <div className="w-12 h-12 rounded-full bg-gray-600"></div>
+    //           </DropdownTrigger>
+    //           <DropdownMenu aria-label="static Actions">
+    //             <DropdownItem onClick={handleLogout} className="px-3 py-2 text-white text-xl bg-red-500 rounded-xl hover:bg-red-400 active:bg-red-300">LogOut</DropdownItem>
+    //           </DropdownMenu>
+    //         </Dropdown>
+
+
+    //       </div>
+    //     </div>
     <div className="flex flex-col items-center justify-center gap-10">
-        <div className="w-[98%] min-h-20 backdrop-blur-md bg-[#2a2a2a] rounded-xl flex justify-end items-center p-3">
-          <div className="flex gap-4 items-center justify-center">
-            <p>User Name</p>
-
-
-            <Dropdown>
-              <DropdownTrigger>
-                <div className="w-12 h-12 rounded-full bg-gray-600"></div>
-              </DropdownTrigger>
-              <DropdownMenu aria-label="static Actions">
-                <DropdownItem onClick={handleLogout} className="px-3 py-2 text-white text-xl bg-red-500 rounded-xl hover:bg-red-400 active:bg-red-300">LogOut</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-
-
-          </div>
-        </div>
-
+      <div className='flex w-full justify-center items-center pt-5'>
+        <NavBarHome/>
+      </div>
       <input className="hidden" type="file" ref={uploadFileRef} onChange={(e) => {
         e.preventDefault(); 
         setFileName(e.target.files[0].name);

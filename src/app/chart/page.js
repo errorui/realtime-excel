@@ -4,6 +4,7 @@ import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, BarElement, LineElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import NavBarHome from '../NavBarHome';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, BarElement, LineElement, Title, Tooltip, Legend, ArcElement);
 
@@ -68,6 +69,9 @@ export default function CreateChart() {
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col">
+            <div className='flex w-full justify-center items-center pt-5'>
+                <NavBarHome/>
+            </div>
             {/* Main Content */}
             <div className="flex flex-1 p-8 space-x-8">
                 {/* Chart Creation Panel */}
