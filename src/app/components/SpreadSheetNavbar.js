@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   AiOutlineFilter,
@@ -12,10 +12,10 @@ import {
   AiOutlineUnderline,
   AiOutlineSave,
   AiOutlineDownload,
-  AiOutlineUpload
+  AiOutlineUpload,
 } from "react-icons/ai";
 import { MdColorLens } from "react-icons/md";
-import { Tooltip } from 'react-tooltip';
+import { Tooltip } from "react-tooltip";
 
 const SpreadSheetNavbar = ({
   onFilter,
@@ -32,8 +32,17 @@ const SpreadSheetNavbar = ({
   onSave,
   onExport,
   onToggleChart,
-  onImport
+  onImport,
 }) => {
+  // State to track if the cell color button is toggled
+  const [isCellColorActive, setIsCellColorActive] = useState(false);
+
+  // Handle cell color button click
+  const handleCellColorClick = () => {
+    setIsCellColorActive(!isCellColorActive);
+    onCellColor(); // Call the passed-in onCellColor function
+  };
+
   return (
     <div className="bg-gray-200 p-2 flex items-center space-x-3 shadow-md">
       {/* Filter Button */}
@@ -143,8 +152,10 @@ const SpreadSheetNavbar = ({
 
       {/* Cell Color Picker */}
       <button
-        className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
-        onClick={onCellColor}
+        className={`flex items-center space-x-1 p-1 rounded-md shadow-sm text-sm ${
+          isCellColorActive ? "bg-blue-500 text-white" : "bg-white"
+        }`}
+        onClick={handleCellColorClick}
         data-tooltip-id="cell-color-tooltip"
       >
         <MdColorLens className="text-base" />
