@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import SpreadSheetNavbar from "./SpreadSheetNavbar";
 import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
+import * as XLSX from "xlsx";
 const Spreadsheet = ({
   socket,roomId
 }) => {
@@ -26,6 +27,8 @@ const Spreadsheet = ({
       Array(26).fill('')
     )
   );
+  const [spreadsheetName, setSpreadsheetName]= useState('Untitled Spreadsheet');
+  const [isEditingName, setIsEditingName] = useState(false);
    const isSocketUpdate = useRef(false);
 
   const handleTableUpdate = useCallback((data) => {
@@ -531,33 +534,134 @@ const Spreadsheet = ({
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
+      const fileExtension = file.name.split(".").pop();
+  
       reader.onload = function (event) {
-        const text = event.target.result;
-        const rows = text.split("\n"); // Split by newline to get rows
-        const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
-
-        const updatedCells = cells.map((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
-              return {
-                ...cell,
-                value: parsedData[rowIndex][colIndex], // Update the value from CSV
-              };
-            }
-            return cell;
-          })
-        );
-
-        setCells(updatedCells);
+        if (fileExtension === "csv") {
+          // Handle CSV file
+          const text = event.target.result;
+          const rows = text.split("\n"); // Split by newline to get rows
+          const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
+  
+          const updatedCells = cells.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+                return {
+                  ...cell,
+                  value: parsedData[rowIndex][colIndex], // Update the value from CSV
+                };
+              }
+              return cell;
+            })
+          );
+  
+          setCells(updatedCells);
+        } else if (fileExtension === "xlsx") {
+          // Handle XLSX file
+          const data = new Uint8Array(event.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const parsedData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+  
+          const updatedCells = cells.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+                return {
+                  ...cell,
+                  value: parsedData[rowIndex][colIndex], // Update the value from XLSX
+                };
+              }
+              return cell;
+            })
+          );
+  
+          setCells(updatedCells);
+        } else {
+          console.error("Unsupported file type. Please upload a CSV or XLSX file.");
+        }
       };
-      reader.readAsText(file);
+      if (fileExtension === "csv") {
+        reader.readAsText(file);
+      } else if (fileExtension === "xlsx") {
+        reader.readAsArrayBuffer(file);
+      }
     }
   };
   const handleFileUpload= ()=>{
     document.getElementById("fileInput").click();
   }
+  const handleNameClick = () => {
+    setIsEditingName(true);
+  };
+
+  const handleNameChange = (e) => {
+    setSpreadsheetName(e.target.value);
+  };
+
+  const handleNameBlur = () => {
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setIsEditingName(false);
+    }
+  };
+  const handleGoogleSheetsImport = async () => {
+    try {
+      const googleSheetsUrl = prompt("Please enter the Google Sheets API URL:");
+  
+      if (!googleSheetsUrl) {
+        alert("No URL provided. Import cancelled.");
+        return;
+      }
+  
+      const response = await fetch(googleSheetsUrl);
+      const text = await response.text();
+      const rows = text.split("\n");
+      const parsedData = rows.map((row) => row.split(","));
+  
+      const updatedCells = cells.map((row, rowIndex) =>
+        row.map((cell, colIndex) => {
+          if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+            return {
+              ...cell,
+              value: parsedData[rowIndex][colIndex],
+              bold: false,
+              italic: false,
+              underline: false,
+            };
+          }
+          return cell;
+        })
+      );
+  
+      setCells(updatedCells);
+    } catch (error) {
+      console.error('Error fetching Google Sheets data:', error);
+    }
+  };
+  
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
+      {isEditingName ? (
+        <input
+          type="text"
+          value={spreadsheetName}
+          onChange={handleNameChange}
+          onBlur={handleNameBlur}
+          onKeyDown={handleNameKeyDown}
+          autoFocus
+          className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 focus:outline-none"
+        />
+      ) : (
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-4 cursor-pointer"
+          onClick={handleNameClick}
+        >
+          {spreadsheetName}
+        </h2>
+      )}
       <SpreadSheetNavbar
         onFilter={handleFilter}
         onSortAsc={handleSortAsc}
@@ -573,6 +677,7 @@ const Spreadsheet = ({
         onSave={handleSave}
         onExport={handleExport}
         onImport={handleFileUpload}
+        onGoogleSheetsImport={handleGoogleSheetsImport}
       />
       <div className="min-w-max">
         <table className="border-collapse border border-gray-300" id='myTable'>
@@ -639,7 +744,7 @@ const Spreadsheet = ({
          <input
           type="file"
           id="fileInput"
-          accept=".csv"
+          accept=".csv, .xlsx"
           style={{ display: "none" }}
           onChange={handleImport}
         />
