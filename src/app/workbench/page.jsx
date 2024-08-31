@@ -7,8 +7,8 @@ import { useAuth } from "../../../context/auth";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-// const API_URL = "https://excel-auth.onrender.com"
-const API_URL = 'http://localhost:4002'
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 const page = () => {
 
