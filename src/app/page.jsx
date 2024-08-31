@@ -1,3 +1,5 @@
+
+
 import NavBarHome from "./NavBarHome";
 import Link from "next/link";
 import image from '../../public/landing page.jpg'
