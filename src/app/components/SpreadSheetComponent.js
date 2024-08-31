@@ -24,6 +24,8 @@ const Spreadsheet = () => {
       Array(26).fill('')
     )
   );
+  const [spreadsheetName, setSpreadsheetName]= useState('Untitled Spreadsheet');
+  const [isEditingName, setIsEditingName] = useState(false);
    const isSocketUpdate = useRef(false);
 
   const handleTableUpdate = useCallback((data) => {
@@ -554,8 +556,43 @@ const Spreadsheet = () => {
   const handleFileUpload= ()=>{
     document.getElementById("fileInput").click();
   }
+  const handleNameClick = () => {
+    setIsEditingName(true);
+  };
+
+  const handleNameChange = (e) => {
+    setSpreadsheetName(e.target.value);
+  };
+
+  const handleNameBlur = () => {
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setIsEditingName(false);
+    }
+  };
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
+      {isEditingName ? (
+        <input
+          type="text"
+          value={spreadsheetName}
+          onChange={handleNameChange}
+          onBlur={handleNameBlur}
+          onKeyDown={handleNameKeyDown}
+          autoFocus
+          className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 focus:outline-none"
+        />
+      ) : (
+        <h2
+          className="text-2xl font-bold text-gray-800 mb-4 cursor-pointer"
+          onClick={handleNameClick}
+        >
+          {spreadsheetName}
+        </h2>
+      )}
       <SpreadSheetNavbar
         onFilter={handleFilter}
         onSortAsc={handleSortAsc}
