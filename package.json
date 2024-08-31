@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/dropdown": "^2.1.29",
     "ag-grid-community": "^32.1.0",
     "ag-grid-enterprise": "^32.1.0",
     "ag-grid-react": "^32.1.0",
     "axios": "^1.7.6",
     "chart.js": "^4.4.4",
+    "framer-motion": "^11.3.31",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "lucide-react": "^0.436.0",
@@ -31,7 +33,8 @@
     "react-tabular": "^0.0.3",
     "react-tabulator": "^0.21.0",
     "react-tooltip": "^5.28.0",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "tailwind-merge": "^2.5.2"
   },
   "devDependencies": {
     "postcss": "^8",
