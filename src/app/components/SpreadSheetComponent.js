@@ -528,32 +528,6 @@ const Spreadsheet = () => {
       end: { rowIndex: cells.length - 1, colIndex },
     });
   };
-  // const handleImport = (e) => {
-  //   const file = e.target.files[0];
-  //   if (file) {
-  //     const reader = new FileReader();
-  //     reader.onload = function (event) {
-  //       const text = event.target.result;
-  //       const rows = text.split("\n"); // Split by newline to get rows
-  //       const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
-
-  //       const updatedCells = cells.map((row, rowIndex) =>
-  //         row.map((cell, colIndex) => {
-  //           if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
-  //             return {
-  //               ...cell,
-  //               value: parsedData[rowIndex][colIndex], // Update the value from CSV
-  //             };
-  //           }
-  //           return cell;
-  //         })
-  //       );
-
-  //       setCells(updatedCells);
-  //     };
-  //     reader.readAsText(file);
-  //   }
-  // };
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -604,7 +578,6 @@ const Spreadsheet = () => {
           console.error("Unsupported file type. Please upload a CSV or XLSX file.");
         }
       };
-  
       if (fileExtension === "csv") {
         reader.readAsText(file);
       } else if (fileExtension === "xlsx") {
@@ -632,6 +605,41 @@ const Spreadsheet = () => {
       setIsEditingName(false);
     }
   };
+  const handleGoogleSheetsImport = async () => {
+    try {
+      const googleSheetsUrl = prompt("Please enter the Google Sheets API URL:");
+  
+      if (!googleSheetsUrl) {
+        alert("No URL provided. Import cancelled.");
+        return;
+      }
+  
+      const response = await fetch(googleSheetsUrl);
+      const text = await response.text();
+      const rows = text.split("\n");
+      const parsedData = rows.map((row) => row.split(","));
+  
+      const updatedCells = cells.map((row, rowIndex) =>
+        row.map((cell, colIndex) => {
+          if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+            return {
+              ...cell,
+              value: parsedData[rowIndex][colIndex],
+              bold: false,
+              italic: false,
+              underline: false,
+            };
+          }
+          return cell;
+        })
+      );
+  
+      setCells(updatedCells);
+    } catch (error) {
+      console.error('Error fetching Google Sheets data:', error);
+    }
+  };
+  
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
       {isEditingName ? (
@@ -667,6 +675,7 @@ const Spreadsheet = () => {
         onSave={handleSave}
         onExport={handleExport}
         onImport={handleFileUpload}
+        onGoogleSheetsImport={handleGoogleSheetsImport}
       />
       <div className="min-w-max">
         <table className="border-collapse border border-gray-300" id='myTable'>

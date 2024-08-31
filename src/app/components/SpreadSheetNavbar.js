@@ -13,6 +13,7 @@ import {
   AiOutlineSave,
   AiOutlineDownload,
   AiOutlineUpload,
+  AiOutlineGoogle
 } from "react-icons/ai";
 import { MdColorLens } from "react-icons/md";
 import { Tooltip } from "react-tooltip";
@@ -33,6 +34,7 @@ const SpreadSheetNavbar = ({
   onExport,
   onToggleChart,
   onImport,
+  onGoogleSheetsImport
 }) => {
   // State to track if the cell color button is toggled
   const [isCellColorActive, setIsCellColorActive] = useState(false);
@@ -195,6 +197,15 @@ const SpreadSheetNavbar = ({
       <Tooltip id="import-tooltip" content="Import document" />
 
       {/* Toggle Chart Button with Link */}
+      <button
+        className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
+        onClick={onGoogleSheetsImport}
+        data-tooltip-id="google-sheets-tooltip"
+      >
+        <AiOutlineGoogle className="text-base" />
+        <span className="hidden md:inline">Import from Google Sheets</span>
+      </button>
+      <Tooltip id="google-sheets-tooltip" content="Import from Google Sheets" />
       <Link href="/chart">
         <button
           className="flex items-center space-x-1 p-1 bg-white rounded-md shadow-sm hover:bg-gray-100 text-sm"
