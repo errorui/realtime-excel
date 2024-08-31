@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import SpreadSheetNavbar from "./SpreadSheetNavbar";
 import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
+import * as XLSX from "xlsx";
 const Spreadsheet = () => {
     let roomId="d"
  
@@ -527,30 +528,88 @@ const Spreadsheet = () => {
       end: { rowIndex: cells.length - 1, colIndex },
     });
   };
+  // const handleImport = (e) => {
+  //   const file = e.target.files[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onload = function (event) {
+  //       const text = event.target.result;
+  //       const rows = text.split("\n"); // Split by newline to get rows
+  //       const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
+
+  //       const updatedCells = cells.map((row, rowIndex) =>
+  //         row.map((cell, colIndex) => {
+  //           if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+  //             return {
+  //               ...cell,
+  //               value: parsedData[rowIndex][colIndex], // Update the value from CSV
+  //             };
+  //           }
+  //           return cell;
+  //         })
+  //       );
+
+  //       setCells(updatedCells);
+  //     };
+  //     reader.readAsText(file);
+  //   }
+  // };
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
+      const fileExtension = file.name.split(".").pop();
+  
       reader.onload = function (event) {
-        const text = event.target.result;
-        const rows = text.split("\n"); // Split by newline to get rows
-        const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
-
-        const updatedCells = cells.map((row, rowIndex) =>
-          row.map((cell, colIndex) => {
-            if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
-              return {
-                ...cell,
-                value: parsedData[rowIndex][colIndex], // Update the value from CSV
-              };
-            }
-            return cell;
-          })
-        );
-
-        setCells(updatedCells);
+        if (fileExtension === "csv") {
+          // Handle CSV file
+          const text = event.target.result;
+          const rows = text.split("\n"); // Split by newline to get rows
+          const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
+  
+          const updatedCells = cells.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+                return {
+                  ...cell,
+                  value: parsedData[rowIndex][colIndex], // Update the value from CSV
+                };
+              }
+              return cell;
+            })
+          );
+  
+          setCells(updatedCells);
+        } else if (fileExtension === "xlsx") {
+          // Handle XLSX file
+          const data = new Uint8Array(event.target.result);
+          const workbook = XLSX.read(data, { type: "array" });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const parsedData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+  
+          const updatedCells = cells.map((row, rowIndex) =>
+            row.map((cell, colIndex) => {
+              if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+                return {
+                  ...cell,
+                  value: parsedData[rowIndex][colIndex], // Update the value from XLSX
+                };
+              }
+              return cell;
+            })
+          );
+  
+          setCells(updatedCells);
+        } else {
+          console.error("Unsupported file type. Please upload a CSV or XLSX file.");
+        }
       };
-      reader.readAsText(file);
+  
+      if (fileExtension === "csv") {
+        reader.readAsText(file);
+      } else if (fileExtension === "xlsx") {
+        reader.readAsArrayBuffer(file);
+      }
     }
   };
   const handleFileUpload= ()=>{
@@ -674,7 +733,7 @@ const Spreadsheet = () => {
          <input
           type="file"
           id="fileInput"
-          accept=".csv"
+          accept=".csv, .xlsx"
           style={{ display: "none" }}
           onChange={handleImport}
         />
