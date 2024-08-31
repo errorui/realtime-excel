@@ -1,7 +1,7 @@
 import { Inknut_Antiqua, Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../../context/auth";
-
+import { Providers } from "./provider";
 // const inter = Inter({ subsets: ["latin"] });
 const inknut = Inknut_Antiqua({ weight: "500" ,subsets: ["latin"] });
 
@@ -15,7 +15,9 @@ export default function RootLayout({ children }) {
     <html lang="en" >
       <body>
         <AuthProvider>
-          {children}
+          <Providers>
+            {children}
+          </Providers>
         </AuthProvider>
       </body>
     </html>
