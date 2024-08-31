@@ -16,7 +16,7 @@ const getRandomImage = (index) => {
 
 const AvatarStack = ({ avatars }) => {
   const [avatarImages, setAvatarImages] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false); // Add state for dropdown visibility
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     // Initialize avatarImages with random images for each avatar
@@ -31,35 +31,34 @@ const AvatarStack = ({ avatars }) => {
     <div className="relative flex items-center -space-x-4 rtl:space-x-reverse">
       {displayedAvatars.map((avatar, index) => (
         <img
-          key={avatar.id}  // Use avatar.id as key
-          className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800"
-          src={avatarImages[index]} // Use pre-generated random images
-          alt={avatar.name}
+        onClick={() => setShowDropdown(!showDropdown)}
+          key={avatar.id}
+          className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800 cursor-pointer"
+          src={avatarImages[index] || getRandomImage(index)}
+          alt={avatar.name || 'Avatar'}
         />
       ))}
 
-      {/* Button for remaining avatars */}
       {remainingAvatars.length > 0 && (
         <button
-          onClick={() => setShowDropdown(!showDropdown)} // Toggle dropdown visibility
+          onClick={() => setShowDropdown(!showDropdown)}
           className="w-10 h-10 flex items-center justify-center border-2 border-white rounded-full dark:border-gray-800 bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-200"
         >
           +{remainingAvatars.length}
         </button>
       )}
 
-      {/* Dropdown for remaining avatars */}
-      {showDropdown && remainingAvatars.length > 0 && (
-        <div className="absolute top-12 left-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg">
+      {showDropdown && avatars.length > 0 && (
+        <div className="absolute top-12 left-0 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-lg z-10">
           <ul>
-            {remainingAvatars.map((avatar, index) => (
+            {avatars.map((avatar, index) => (
               <li key={avatar.id} className="border-t-2 border-gray-200/10 flex items-center p-2 hover:bg-gray-200 dark:hover:bg-gray-700">
                 <img
                   className="w-8 h-8 border-2 border-white rounded-full dark:border-gray-800"
-                  src={avatarImages[index + 3]} // Use index-based random image for dropdown avatars
-                  alt={avatar.name}
+                  src={avatarImages[index] }
+                  alt={avatar.name || 'Avatar'}
                 />
-                <span className="ml-2">{avatar.name}</span>
+                <span className="ml-2">{avatar.name || 'Unnamed Avatar'}</span>
               </li>
             ))}
           </ul>

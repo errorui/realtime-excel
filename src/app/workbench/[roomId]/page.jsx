@@ -15,10 +15,12 @@ const Page = () => {
   const { user } = useAuth();
 
   // Initialize avatars as state
-  const [avatars, setAvatars] = useState([] ); 
-   useEffect(()=>{
-    console.log(avatars)
-   },[avatars])
+  const [avatars, setAvatars] = useState([]);
+
+  useEffect(() => {
+    console.log(avatars);
+  }, [avatars]);
+
   const roomid = pathname.split("/")[2];
 
   return (
@@ -27,8 +29,13 @@ const Page = () => {
         <div>
           <ToastContainer />
           <h1>Room ID: {roomid}</h1>
-          <AvatarStack avatars={avatars} /> 
-          <CursorTracker roomId={roomid} socket={socket} user={user.username}  />
+          <AvatarStack avatars={avatars} />
+          <CursorTracker
+            roomId={roomid}
+            socket={socket}
+            user={user.username}
+            setAvatars={setAvatars}
+          />
           <Spreadsheet roomId={roomid} socket={socket} />
         </div>
       )}

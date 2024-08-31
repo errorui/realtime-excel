@@ -1,15 +1,12 @@
 "use client";
 import React, { useEffect, useState } from 'react';
-
 import CursorSVG from './../../../public/assets/Cursor';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useAuth } from '../../../context/auth';
 
-const CursorTracker = ({ roomId ,socket,user}) => {
-
+const CursorTracker = ({ roomId, socket, user, setAvatars }) => {
   const [cursors, setCursors] = useState([]);
-  console.log(user)
+
   useEffect(() => {
     if (roomId) {
       socket.emit('join room', roomId);
@@ -25,30 +22,42 @@ const CursorTracker = ({ roomId ,socket,user}) => {
     }
 
     const handleCursorUpdate = (data) => {
-     console.log("hello")
+      const { id, x, y, user } = data;
+
+      // Update cursors state
       setCursors((prevCursors) => {
-        const cursorIndex = prevCursors.findIndex(cursor => cursor.id === data.id);
+        const cursorIndex = prevCursors.findIndex(cursor => cursor.id === id);
 
         if (cursorIndex > -1) {
           const updatedCursors = [...prevCursors];
-          updatedCursors[cursorIndex] = { ...updatedCursors[cursorIndex], x: data.x, y: data.y };
+          updatedCursors[cursorIndex] = { ...updatedCursors[cursorIndex], x, y };
           return updatedCursors;
         } else {
-          return [...prevCursors, { id: data.id, x: data.x, y: data.y, color: getRandomColor(),user:data.user }];
+          return [...prevCursors, { id, x, y, color: getRandomColor(), user }];
         }
+      });
+
+      // Update avatars state in Page component
+      setAvatars((prevAvatars) => {
+        const existingAvatar = prevAvatars.find(avatar => avatar.id === id);
+        if (existingAvatar) {
+          return prevAvatars.map(avatar =>
+            avatar.id === id ? { ...avatar, x, y } : avatar
+          );
+        }
+
+        return [...prevAvatars, { id, x, y, color: getRandomColor(), name: user }];
       });
     };
 
     const handleCursorDisconnect = (id) => {
-      console.log('Received cursor-disconnect:', id);
       setCursors((prevCursors) => prevCursors.filter(cursor => cursor.id !== id));
+      setAvatars((prevAvatars) => prevAvatars.filter(avatar => avatar.id !== id));
     };
 
-    
     socket.on('cursor-update', handleCursorUpdate);
     socket.on('cursor-disconnect', handleCursorDisconnect);
 
-    
     return () => {
       socket.emit('disconnect-room', { roomId });
       socket.off('cursor-update', handleCursorUpdate);
@@ -58,7 +67,7 @@ const CursorTracker = ({ roomId ,socket,user}) => {
 
   useEffect(() => {
     const handleMouseMove = throttle((e) => {
-      socket.emit('cursor-move', { x: e.clientX, y: e.clientY, roomId,user });
+      socket.emit('cursor-move', { x: e.clientX, y: e.clientY, roomId, user });
     }, 90);
 
     window.addEventListener('mousemove', handleMouseMove);
@@ -85,7 +94,7 @@ const CursorTracker = ({ roomId ,socket,user}) => {
 
   return (
     <>
-      {cursors.map(({ id, x, y, color,user }) => (
+      {cursors.map(({ id, x, y, color, user }) => (
         <div
           key={id}
           style={{
