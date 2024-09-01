@@ -101,13 +101,50 @@ import {
 } from "../../components/ui/animated-modal";
 import { ScrollShadow } from "@nextui-org/scroll-shadow";
 import { Select, SelectItem } from "@nextui-org/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/table";
 import { PlusCircle, PlusSquare } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+const previousWork = [
+  {
+    name: "Osama Bin Laden",
+    date: "09-11-2001",
+  },
+  {
+    name: "Osama Bin Laden",
+    date: "09-11-2001",
+  },
+  {
+    name: "Osama Bin Laden",
+    date: "09-11-2001",
+  },
+  {
+    name: "Osama Bin Laden",
+    date: "09-11-2001",
+  },
+  {
+    name: "Osama Bin Laden",
+    date: "09-11-2001",
+  },
+  {
+    name: "Osama Bin Laden",
+    date: "09-11-2001",
+  },
+];
 
 const page = () => {
-  // const [divs, setDivs] = useState([]);
-  // const handleAddClick = () => {
-  //   setDivs([...divs, { id: divs.length }]);
+  useEffect(() => {
+    document.getElementById(
+      "previousWorkTable"
+    ).firstChild.firstChild.style.background = "black";
+  }, []);
   const [email, setEmail] = useState("");
   const [permission, setPermission] = useState("Read");
   const [data, setData] = useState([]);
@@ -134,7 +171,7 @@ const page = () => {
   };
 
   return (
-    <div className="flex flex-col items-center gap-10 min-h-[100vh] bg-black">
+    <div className="flex flex-col items-center gap-10 min-h-[100vh] bg-black text-white">
       <div className="w-[98%] min-h-20 backdrop-blur-md bg-[#2a2a2a] rounded-xl mt-5 flex justify-end items-center p-3">
         <div className="flex gap-4 items-center justify-center">
           <p>User Name</p>
@@ -276,15 +313,43 @@ const page = () => {
         </ModalBody>
       </Modal>
       <div className="flex flex-col gap-10 w-[95%]">
-        <h2 className="text-start w-full text-5xl">Previous Work</h2>
-        <div className="w-full flex flex-wrap justify-around gap-y-6">
-          {Array.from({ length: 5 }, (_, index) => index).map((item) => (
-            <>
-              <div className="min-w-[30%] min-h-20 border-2 p-3 rounded-xl">
-                {item}
-              </div>
-            </>
-          ))}
+        <h2 className="text-start w-full text-5xl text-white">Previous Work</h2>
+        <div
+          className="w-full flex flex-wrap justify-around gap-y-6"
+          id="previousWorkTable"
+        >
+          <Table
+            aria-label="Previous Work"
+            className="text-white"
+            style={{ background: "black !important" }}
+          >
+            <TableHeader>
+              <TableColumn className="bg-gray-600 text-white">
+                S. No
+              </TableColumn>
+              <TableColumn className="bg-gray-600 text-white">Name</TableColumn>
+              <TableColumn className="bg-gray-600 text-white">
+                Last Modified
+              </TableColumn>
+              <TableColumn className="bg-gray-600 text-white">
+                Action
+              </TableColumn>
+            </TableHeader>
+            <TableBody>
+              {previousWork.map((item, i) => (
+                <TableRow key={i} className="hover:bg-slate-500">
+                  <TableCell>{i + 1}</TableCell>
+                  <TableCell>{item.name}</TableCell>
+                  <TableCell>{item.date}</TableCell>
+                  <TableCell>
+                    <button className="p-1 px-3 rounded-full bg-red-500 hover:bg-red-700 transition-all duration-500">
+                      Delete
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>
