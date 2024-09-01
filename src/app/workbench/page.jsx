@@ -93,6 +93,12 @@
 
 "use client";
 import {
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownTrigger,
+} from "@nextui-org/dropdown";
+import {
   Modal,
   ModalBody,
   ModalContent,
@@ -109,8 +115,9 @@ import {
   TableHeader,
   TableRow,
 } from "@nextui-org/table";
-import { PlusCircle, PlusSquare } from "lucide-react";
+import { DivideCircle, PlusCircle, PlusSquare } from "lucide-react";
 import React, { useEffect, useState } from "react";
+import { Button } from "@nextui-org/react";
 
 const previousWork = [
   {
@@ -175,7 +182,20 @@ const page = () => {
       <div className="w-[98%] min-h-20 backdrop-blur-md bg-[#2a2a2a] rounded-xl mt-5 flex justify-end items-center p-3">
         <div className="flex gap-4 items-center justify-center">
           <p>User Name</p>
-          <div className="w-12 h-12 rounded-full bg-gray-600"></div>
+
+          <Dropdown>
+            <DropdownTrigger>
+              <div
+                variant="bordered"
+                className="w-12 h-12 rounded-full bg-gray-600 cursor-pointer"
+              ></div>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Static Actions">
+              <DropdownItem key="delete" className="text-danger" color="danger">
+                Log out
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         </div>
       </div>
       <Modal>
@@ -240,39 +260,42 @@ const page = () => {
               </button> */}
 
               <div className="p-5">
-                <span className="text-xl">File Name</span>
+                <h1 className="text-3xl text-white text-center my-2">
+                  Add New File
+                </h1>
+                <span className="text-xl mr-2">File Name</span>
                 <input
                   type="text"
                   placeholder="foobar"
-                  className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl p-2 h-10 w-fit min-w-40"
+                  className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl p-2 h-10 w-fit min-w-40  "
                 />
+                <div className="p-2">
+                  <div className="m-2 w-full">
+                    <label>Email: </label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl p-2 h-10 w-fit min-w-40"
+                    />
+                  </div>
 
-                <div className="m-2">
-                  <label>Email: </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl p-2 h-10 w-fit min-w-40"
-                  />
+                  <div className="">
+                    <label>Permission: </label>
+                    <Select
+                      className="w-full m-2"
+                      onChange={(e) => setPermission(e.target.value)}
+                    >
+                      <SelectItem key={`read`} className="text-black w-full">
+                        Can Read
+                      </SelectItem>
+                      <SelectItem key={`write`} className="text-black w-full">
+                        Can Write
+                      </SelectItem>
+                    </Select>
+                  </div>
                 </div>
-
-                <div className="form-group m-2">
-                  <label>Permission: </label>
-                  <Select
-                    className="w-full m-2"
-                    onChange={(e) => setPermission(e.target.value)}
-                  >
-                    <SelectItem key={`read`} className="text-black w-full">
-                      Can Read
-                    </SelectItem>
-                    <SelectItem key={`write`} className="text-black w-full">
-                      Can Write
-                    </SelectItem>
-                  </Select>
-                </div>
-
                 {error && <div className="text-red-500 m-2">{error}</div>}
 
                 <button
@@ -286,7 +309,7 @@ const page = () => {
                   <h3>Members</h3>
                   {data.map((entry, index) => (
                     <div
-                      className="flex justify-between items-center mb-2 border-1 border-[#ddd] p-3 rounded-md"
+                      className="flex justify-between text-medium items-center mb-2 border-1 border-[#ddd] p-3 rounded-md"
                       key={index}
                     >
                       <div>
