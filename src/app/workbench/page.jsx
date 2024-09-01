@@ -117,36 +117,24 @@ import {
 } from "@nextui-org/table";
 import { DivideCircle, PlusCircle, PlusSquare } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { Button } from "@nextui-org/react";
-
-const previousWork = [
-  {
-    name: "Osama Bin Laden",
-    date: "09-11-2001",
-  },
-  {
-    name: "Osama Bin Laden",
-    date: "09-11-2001",
-  },
-  {
-    name: "Osama Bin Laden",
-    date: "09-11-2001",
-  },
-  {
-    name: "Osama Bin Laden",
-    date: "09-11-2001",
-  },
-  {
-    name: "Osama Bin Laden",
-    date: "09-11-2001",
-  },
-  {
-    name: "Osama Bin Laden",
-    date: "09-11-2001",
-  },
-];
+import { Button, user } from "@nextui-org/react";
+import Link from 'next/link';
+import { useAuth } from "../../../context/auth";
 
 const page = () => {
+  const {user}= useAuth();
+  const [previousWork, setPreviousWork] = useState([]);
+  useEffect(() => {
+    if (user && user.projects) {
+      // Extract spreadsheetId from user.projects and map to previousWork
+      const updatedPreviousWork = user.projects.map(project => ({
+        id: project.spreadsheetId, // Assuming spreadsheetId should be the ID
+        name: "Osama Bin Laden" // or any other name logic you want to apply
+      }));
+
+      setPreviousWork(updatedPreviousWork);
+    }
+  }, [user]);
   useEffect(() => {
     document.getElementById(
       "previousWorkTable"
@@ -170,12 +158,17 @@ const page = () => {
     setEmail("");
     setPermission("Read");
   };
+  // const userOnpage= useAuth().user;
+  // useEffect(()=>{
+  //   console.log(userOnpage.projects);
+  // }, []);
 
   const handleDelete = (index) => {
     const newData = [...data];
     newData.splice(index, 1);
     setData(newData);
   };
+
 
   return (
     <div className="flex flex-col items-center gap-10 min-h-[100vh] bg-black text-white">
@@ -351,9 +344,9 @@ const page = () => {
                 S. No
               </TableColumn>
               <TableColumn className="bg-gray-600 text-white">Name</TableColumn>
-              <TableColumn className="bg-gray-600 text-white">
+              {/* <TableColumn className="bg-gray-600 text-white">
                 Last Modified
-              </TableColumn>
+              </TableColumn> */}
               <TableColumn className="bg-gray-600 text-white">
                 Action
               </TableColumn>
@@ -362,16 +355,21 @@ const page = () => {
               {previousWork.map((item, i) => (
                 <TableRow key={i} className="hover:bg-slate-500">
                   <TableCell>{i + 1}</TableCell>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.date}</TableCell>
                   <TableCell>
-                    <button className="p-1 px-3 rounded-full bg-red-500 hover:bg-red-700 transition-all duration-500">
+                    <Link href={`/workbench/${item.id}`} passHref>
+                    <span className="hover:underline">{item.name}</span>
+                    </Link>
+                  </TableCell>
+                  {/* <TableCell>{item.date}</TableCell> */}
+                  <TableCell>
+                    <button className="p-1 px-3 rounded-full bg-red-500 hover:bg-red-700 transition-all duration-500" onClick={handleDelete}>
                       Delete
                     </button>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
+
           </Table>
         </div>
       </div>

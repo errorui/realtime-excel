@@ -8,7 +8,7 @@ import axios from 'axios';
 const Spreadsheet = ({
   socket,roomId
 }) => {
-  const spreadhsheetid= 'cd068e2a-87e4-4729-873d-217eba2da69b';
+  const spreadhsheetid= roomId;
   // -s
   const [cells, setCells] = useState(() =>
     Array(100)
@@ -25,6 +25,7 @@ const Spreadsheet = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(spreadhsheetid);
         const response = await axios.get(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`);
         
         // Assuming response.data is a 2D array of numbers
