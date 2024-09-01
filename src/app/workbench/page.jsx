@@ -7,7 +7,6 @@
 // import { useRouter } from "next/navigation";
 // import axios from "axios";
 
-
 // const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 // const page = () => {
@@ -28,13 +27,11 @@
 //     }
 //   }
 
-
 //   return (
 //     <div className="flex flex-col items-center justify-center gap-10">
 //         <div className="w-[98%] min-h-20 backdrop-blur-md bg-[#2a2a2a] rounded-xl flex justify-end items-center p-3">
 //           <div className="flex gap-4 items-center justify-center">
 //             <p>User Name</p>
-
 
 //             <Dropdown>
 //               <DropdownTrigger>
@@ -45,12 +42,11 @@
 //               </DropdownMenu>
 //             </Dropdown>
 
-
 //           </div>
 //         </div>
 
 //       <input className="hidden" type="file" ref={uploadFileRef} onChange={(e) => {
-//         e.preventDefault(); 
+//         e.preventDefault();
 //         setFileName(e.target.files[0].name);
 //         // console.log(e)
 //         // console.log(e.files)
@@ -76,7 +72,7 @@
 //             <File color="white" size={50} />
 //             <Upload className="absolute -bottom-1 right-0 bg-black rounded-full p-1" size={28} />
 //           </div>
-            
+
 //             <span>
 //             Drag and Drop file here or{" "}
 //             <span className="underline font-semibold">Choose File</span>
@@ -95,26 +91,48 @@
 
 // export default page;
 
-
 "use client";
-
 import {
   Modal,
   ModalBody,
   ModalContent,
   ModalFooter,
   ModalTrigger,
-} from '../../components/ui/animated-modal';
+} from "../../components/ui/animated-modal";
 import { ScrollShadow } from "@nextui-org/scroll-shadow";
 import { Select, SelectItem } from "@nextui-org/select";
 import { PlusCircle, PlusSquare } from "lucide-react";
 import React, { useState } from "react";
 
 const page = () => {
-  const [divs, setDivs] = useState([]);
-  const handleAddClick = () => {
-    setDivs([...divs, { id: divs.length }]);
+  // const [divs, setDivs] = useState([]);
+  // const handleAddClick = () => {
+  //   setDivs([...divs, { id: divs.length }]);
+  const [email, setEmail] = useState("");
+  const [permission, setPermission] = useState("Read");
+  const [data, setData] = useState([]);
+  const [error, setError] = useState("");
+
+  const handleSave = () => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailPattern.test(email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
+    setError("");
+    setData([...data, { email, permission }]);
+    setEmail("");
+    setPermission("Read");
   };
+
+  const handleDelete = (index) => {
+    const newData = [...data];
+    newData.splice(index, 1);
+    setData(newData);
+  };
+
   return (
     <div className="flex flex-col items-center gap-10 min-h-[100vh] bg-black">
       <div className="w-[98%] min-h-20 backdrop-blur-md bg-[#2a2a2a] rounded-xl mt-5 flex justify-end items-center p-3">
@@ -133,13 +151,13 @@ const page = () => {
             </div>
           </div>
         </ModalTrigger>
-        <ModalBody className={"bg-black border-2 border-white"}>
+        <ModalBody className={"bg-white border-2 border-white"}>
           <ModalContent className={" flex flex-col items-center gap-4"}>
             <ScrollShadow
               hideScrollBar
               className="w-full h-[400px] flex flex-col items-center gap-4"
             >
-              <div className="flex justify-center items-center gap-4">
+              {/* <div className="flex justify-center items-center gap-4">
                 <span className="text-xl">File Name</span>
                 <input
                   type="text"
@@ -182,7 +200,72 @@ const page = () => {
                 onClick={handleAddClick}
               >
                 <PlusCircle /> Add Members
-              </button>
+              </button> */}
+
+              <div className="p-5">
+                <span className="text-xl">File Name</span>
+                <input
+                  type="text"
+                  placeholder="foobar"
+                  className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl p-2 h-10 w-fit min-w-40"
+                />
+
+                <div className="m-2">
+                  <label>Email: </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl p-2 h-10 w-fit min-w-40"
+                  />
+                </div>
+
+                <div className="form-group m-2">
+                  <label>Permission: </label>
+                  <Select
+                    className="w-full m-2"
+                    onChange={(e) => setPermission(e.target.value)}
+                  >
+                    <SelectItem key={`read`} className="text-black w-full">
+                      Can Read
+                    </SelectItem>
+                    <SelectItem key={`write`} className="text-black w-full">
+                      Can Write
+                    </SelectItem>
+                  </Select>
+                </div>
+
+                {error && <div className="text-red-500 m-2">{error}</div>}
+
+                <button
+                  onClick={handleSave}
+                  className="bg-[#4CAF50] border-none px-1 py-2 rounded-md cursor-pointer w-full"
+                >
+                  Save
+                </button>
+
+                <div className="m-2">
+                  <h3>Members</h3>
+                  {data.map((entry, index) => (
+                    <div
+                      className="flex justify-between items-center mb-2 border-1 border-[#ddd] p-3 rounded-md"
+                      key={index}
+                    >
+                      <div>
+                        <strong>Email:</strong> {entry.email} <br />
+                        <strong>Permission:</strong> {entry.permission}
+                      </div>
+                      <button
+                        onClick={() => handleDelete(index)}
+                        className="bg-[#ff4d4d] text-white border-none px-1 py-2 rounded-md cursor-pointer "
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </ScrollShadow>
           </ModalContent>
           <ModalFooter className="flex w-full justify-around gap-4">
@@ -197,7 +280,9 @@ const page = () => {
         <div className="w-full flex flex-wrap justify-around gap-y-6">
           {Array.from({ length: 5 }, (_, index) => index).map((item) => (
             <>
-              <div className="min-w-[30%] min-h-20 border-2 p-3 rounded-xl">{item}</div>
+              <div className="min-w-[30%] min-h-20 border-2 p-3 rounded-xl">
+                {item}
+              </div>
             </>
           ))}
         </div>
