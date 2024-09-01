@@ -16,7 +16,7 @@ export function GridPattern() {
         <div className="2xl:text-[80px] xl:text-[60px] lg:text-[50px] md:text-[35px] sm:text-[28px] xs:text-[22px]">Pioneers-Sheets</div> 
         <div className="2xl:text-[54px] xl:text-[44px=] lg:text-[34px] md:text-[25px] sm:text-[20px] xs:text-[16px]">Pioneers</div>
         <div className="flex h-[100px] justify-center items-center">
-            <button className="bg-white rounded-xl px-3 py-2 max-w-[300px] w-7/12 place-self-center text-xl text-black hover:border hover:border-black hover:text-white shadow-black transition-all ease-in-out shadow-md hover:shadow-white  hover:bg-black hover:bg-opacity-40" onClick={() => {router.push('/signup')}}>Get Started</button>
+            <button className="bg-white rounded-xl px-3 py-2 max-w-[300px] w-7/12 place-self-center text-xl text-black hover:border hover:border-black hover:text-white shadow-black transition-all ease-in-out shadow-md hover:shadow-white backdrop-blur-sm   hover:bg-black/60 bg-opacity-60" onClick={() => {router.push('/signup')}}>Get Started</button>
         </div>
       </div>
     </div>)

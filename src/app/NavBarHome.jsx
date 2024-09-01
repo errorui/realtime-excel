@@ -2,8 +2,8 @@
 
 import Link from "next/link"
 import {  Dropdown,  DropdownTrigger,  DropdownMenu,  DropdownSection,  DropdownItem} from "@nextui-org/dropdown";
-import { AuthContext, useAuth } from "../../context/auth"
-import { useContext } from "react";
+import {  useAuth } from "../../context/auth"
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
@@ -11,7 +11,7 @@ const API_URL = 'http://localhost:4002'
 
 const NavBarHome = () => {
 
-    const {user, setUser} = useContext(AuthContext)
+   const {user,setUser}=useAuth()
     const router = useRouter()
 
     const handleLogout = async () => {
@@ -23,15 +23,16 @@ const NavBarHome = () => {
           console.error('Logout failed', error)
         }
       }
-    console.log(user)
+ 
 
     if(user){
         return(
-            <div className="w-[98%] rounded-lg flex text-xl justify-center items-center bg-[#2B2B2B]">
+            <div className="sticky top-0 z-[1000000]  bg-slate-900 bg-opacity-70 backdrop-blur-md w-[98%] rounded-lg flex text-xl justify-center items-center text-white">
                 <div className="w-11/12 flex h-full py-5 justify-between">
-                    <div className="flex justify-center items-center">Pioneers-Sheets</div>
-                    <div className="flex justify-center items-center gap-x-3">
-                        <Link href="/workbench"><span>Wrokbench</span></Link>
+                    <div className="flex justify-center items-center font-semibold text-2xl tracking-wider">
+                    <Link href="/"><span>Pioneers-Sheets</span></Link></div>
+                    <div className="flex justify-center items-center gap-x-3 ">
+                        <Link href="/workbench"><span>Workbench</span></Link>
                         <Link href="/chart"><span>GenerateCharts</span></Link>
                     </div>
                     <div className="flex justify-center items-center gap-x-3">
@@ -52,7 +53,7 @@ const NavBarHome = () => {
     }
 
     return ( 
-        <div className="w-[98%] rounded-lg flex text-xl justify-center items-center bg-[#2B2B2B]">
+        <div className="w-[98%] rounded-lg flex text-xl justify-center items-center bg-[#2B2B2B] z-10 sticky">
             <div className="w-11/12 flex h-full py-5 justify-between">
                 <div>Pioneers-Sheets</div>
                 <div className="flex gap-x-3">

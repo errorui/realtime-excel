@@ -37,7 +37,7 @@ export const AuthProvider = ({ children }) => {
         console.log("No user found");
       } else {
         console.log("User found");
-        if (pathname === "/"||(pathname === "/login")||(pathname === "/signup")) {
+        if ((pathname === "/login")||(pathname === "/signup")) {
           router.push("/workbench");
         }
         setUser(res);
