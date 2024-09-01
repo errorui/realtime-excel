@@ -585,6 +585,17 @@ const Spreadsheet = ({
       const reader = new FileReader();
       const fileExtension = file.name.split(".").pop();
   
+      // Clear all cells before processing the file
+      const clearedCells = cells.map((row) =>
+        row.map((cell) => ({
+          ...cell,
+          value: "", // Set the value to empty for all cells
+        }))
+      );
+  
+      // Update the state to cleared cells
+      setCells(clearedCells);
+  
       reader.onload = function (event) {
         if (fileExtension === "csv") {
           // Handle CSV file
@@ -592,12 +603,13 @@ const Spreadsheet = ({
           const rows = text.split("\n"); // Split by newline to get rows
           const parsedData = rows.map((row) => row.split(",")); // Split each row by comma to get columns
   
-          const updatedCells = cells.map((row, rowIndex) =>
+          const updatedCells = clearedCells.map((row, rowIndex) =>
             row.map((cell, colIndex) => {
               if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+                const cleanData = parsedData[rowIndex][colIndex].replace(/"/g, '');
                 return {
                   ...cell,
-                  value: parsedData[rowIndex][colIndex], // Update the value from CSV
+                  value: cleanData || "", // Update the value from CSV
                 };
               }
               return cell;
@@ -612,12 +624,12 @@ const Spreadsheet = ({
           const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
           const parsedData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
   
-          const updatedCells = cells.map((row, rowIndex) =>
+          const updatedCells = clearedCells.map((row, rowIndex) =>
             row.map((cell, colIndex) => {
               if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
                 return {
                   ...cell,
-                  value: parsedData[rowIndex][colIndex], // Update the value from XLSX
+                  value: parsedData[rowIndex][colIndex] || "", // Update the value from XLSX
                 };
               }
               return cell;
@@ -629,6 +641,7 @@ const Spreadsheet = ({
           console.error("Unsupported file type. Please upload a CSV or XLSX file.");
         }
       };
+  
       if (fileExtension === "csv") {
         reader.readAsText(file);
       } else if (fileExtension === "xlsx") {
@@ -636,6 +649,7 @@ const Spreadsheet = ({
       }
     }
   };
+  
   const handleFileUpload= ()=>{
     document.getElementById("fileInput").click();
   }
@@ -764,7 +778,7 @@ const Spreadsheet = ({
                   >
                     <input
                       type="text"
-                      value={cell.value}
+                      value={cell.value==" "? "" : cell.value}
                       onChange={(e) => handleChange(e, rowIndex, colIndex)}
                       onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
                       className={`w-full h-full text-left bg-transparent focus:outline-none ${cell.bold ? "font-bold" : ""
