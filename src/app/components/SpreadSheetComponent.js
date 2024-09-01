@@ -5,6 +5,7 @@ import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
 import * as XLSX from "xlsx";
 import axios from 'axios';
+import { toast } from "react-toastify";
 const Spreadsheet = ({
   socket,roomId
 }) => {
@@ -117,7 +118,12 @@ const Spreadsheet = ({
   const handleKeyDown = (e, rowIndex, colIndex) => {
     const input = e.target;
     const { selectionStart, selectionEnd, value } = input;
-
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault(); // Prevent the default browser behavior
+      // Add your save logic here
+      handleSave();
+      return;
+    }
     if (
       (e.key === "ArrowLeft" && selectionStart > 0) ||
       (e.key === "ArrowRight" && selectionEnd < value.length) ||
@@ -533,6 +539,9 @@ const Spreadsheet = ({
       // // Send POST request
       const response = await axios.post(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`, dataToSend);
       // // Handle success
+      if(response && response.status==200){
+        toast.success('Saved Succesfully');
+      }
       console.log('Data saved successfully:', response.data);
     } catch (error) {
       // Handle error
