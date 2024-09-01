@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/auth";
 import CreateSpreadsheet from "../components/CreateSpreadSheet";
 import PreviousWork from "../components/PreviousWork";
+import NavBarHome from "../NavBarHome";
 
 
 const Page = () => {
@@ -27,6 +28,7 @@ const Page = () => {
 
   return (
     <div className="bg-black flex flex-col items-center gap-6 py-10 min-h-screen">
+      <NavBarHome/>
       <CreateSpreadsheet />
       <PreviousWork
         previousWork={previousWork}

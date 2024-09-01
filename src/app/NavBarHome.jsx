@@ -28,12 +28,16 @@ const NavBarHome = () => {
     if(user){
         return(
             <div className="sticky top-0 z-[1000000]  bg-slate-900 bg-opacity-70 backdrop-blur-md w-[98%] rounded-lg flex text-xl justify-center items-center text-white">
-                <div className="w-11/12 flex h-full py-5 justify-between">
+                <div className="w-11/12 gap-x-4 flex h-full py-5 justify-between">
                     <div className="flex justify-center items-center font-semibold text-2xl tracking-wider">
-                    <Link href="/"><span>Pioneers-Sheets</span></Link></div>
-                    <div className="flex justify-center items-center gap-x-3 ">
+                        <Link href="/"><span className="lg:text-2xl md:block xs:hidden">Pioneers-Sheets</span></Link>
+                        <Link href="/"><div className="w-[50px] h-[50px] md:hidden xs:block rounded-full bg-red-600"></div></Link>
+                    
+                    </div>
+                    <div className="flex justify-center flex-wrap md:text-2xl xs:text-lg items-center md:gap-x-3 xs:gap-x-1 ">
                         <Link href="/workbench"><span>Workbench</span></Link>
-                        <Link href="/chart"><span>GenerateCharts</span></Link>
+                        <Link href="/chart"><span className="md:block xs:hidden" >GenerateCharts</span></Link>
+                        <Link href="/chart"><span className="md:hidden xs:block " >Charts</span></Link>
                     </div>
                     <div className="flex justify-center items-center gap-x-3">
                         <div>{user ? (user.username) : ('user')}</div>

@@ -92,12 +92,15 @@ const router=useRouter()
       <ModalTrigger className="bg-black w-full dark:bg-white  text-white flex justify-center group/modal-btn">
         <div className="flex flex-wrap w-[98%] justify-around">
           <div
-            className="w-[45%] h-[40vh] border-dashed hover:border-solid transition-all duration-500 cursor-pointer border-2 border-gray-600 flex gap-2 justify-center items-center text-lg rounded-xl"
+            className="w-[45%] md:h-[40vh] xs:h-[30vh] px-6 border-dashed hover:border-solid transition-all duration-500 cursor-pointer border-2 border-gray-600 flex lg:flex-row xs:flex-col gap-2 justify-center items-center text-lg rounded-xl"
           >
-            <div className="relative">
+            <div className="md:block xs:hidden relative">
               <PlusCircle size={50} />
             </div>
-            <span>Create New Spreadsheet</span>
+            <div className="md:hidden xs:block relative">
+              <PlusCircle size={33} />
+            </div>
+            <span className="md:text-xl xs:text-md">Create New Spreadsheet</span>
           </div>
         </div>
       </ModalTrigger>
