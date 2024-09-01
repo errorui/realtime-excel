@@ -1,15 +1,14 @@
 
 "use client";
-
 import axios from "axios";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
+// const API_URL = "https://excel-auth.onrender.com"; 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 
 export const AuthProvider = ({ children }) => {
@@ -45,7 +44,23 @@ export const AuthProvider = ({ children }) => {
     };
   
     fetchUser();
-  }, [pathname]); 
+  }, [pathname, router]); 
+  useEffect(() => {
+    const fetchUser = async () => {
+      const res = await getUser();
+      if (!res) {
+        console.log("No user found");
+      } else {
+        console.log("User found");
+        if ((pathname === "/login")||(pathname === "/signup")) {
+          router.push("/workbench");
+        }
+        setUser(res);
+      }
+    };
+  
+    fetchUser();
+  }, []); 
   
 
   return (

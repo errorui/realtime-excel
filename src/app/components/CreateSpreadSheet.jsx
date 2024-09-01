@@ -20,15 +20,14 @@ const router=useRouter()
   const [spreadsheetName, setSpreadsheetName] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([
-    {
-      email: user?.email,
-      canWrite: true,
-    },
-  ]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
-
+  useEffect(() => {
+    if (user) {
+      setSelectedUsers([{email:user.email, canWrite:true}]);
+    }
+  }, [user]);
   useEffect(() => {
     const fetchUsers = async () => {
       try {
