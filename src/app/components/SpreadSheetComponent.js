@@ -5,10 +5,11 @@ import { HexColorPicker } from "react-colorful";
 import socket from "./socket";
 import * as XLSX from "xlsx";
 import axios from 'axios';
+import { toast } from "react-toastify";
 const Spreadsheet = ({
   socket,roomId
 }) => {
-  const spreadhsheetid= 'cd068e2a-87e4-4729-873d-217eba2da69b';
+  const spreadhsheetid= roomId;
   // -s
   const [cells, setCells] = useState(() =>
     Array(100)
@@ -25,6 +26,7 @@ const Spreadsheet = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log(spreadhsheetid);
         const response = await axios.get(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`);
         
         // Assuming response.data is a 2D array of numbers
@@ -116,7 +118,12 @@ const Spreadsheet = ({
   const handleKeyDown = (e, rowIndex, colIndex) => {
     const input = e.target;
     const { selectionStart, selectionEnd, value } = input;
-
+    if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+      e.preventDefault(); // Prevent the default browser behavior
+      // Add your save logic here
+      handleSave();
+      return;
+    }
     if (
       (e.key === "ArrowLeft" && selectionStart > 0) ||
       (e.key === "ArrowRight" && selectionEnd < value.length) ||
@@ -532,6 +539,9 @@ const Spreadsheet = ({
       // // Send POST request
       const response = await axios.post(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`, dataToSend);
       // // Handle success
+      if(response && response.status==200){
+        toast.success('Saved Succesfully');
+      }
       console.log('Data saved successfully:', response.data);
     } catch (error) {
       // Handle error
