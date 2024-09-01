@@ -41,28 +41,28 @@ const Page = () => {
         className="relative w-[80%] min-h-[50vh] flex flex-col items-center justify-between backdrop-blur-sm p-8 gap-10 rounded-3xl border-2 border-gray-700 hover:border-white/20 transition-all duration-500"
         style={{ boxShadow: "22px 22px 45px #000000" }}
       >
-        <h1 className="text-3xl">Login</h1>
+        <h1 className="md:text-3xl xs:text-2xl font-bold">Login</h1>
         <form onSubmit={handleLogin} className="flex flex-col gap-y-4">
-          <div className="flex justify-between items-center">
+          <div className="md:flex-row xs:flex-col flex justify-between items-center md:gap-4 xs:gap-1">
             <span className="text-xl">Email</span>
             <input
               type="email"
               onChange={e => setEmail(e.target.value)}
               placeholder="foobar@gmail.com"
-              className="px-2 py-4 border-gray-700 bg-transparent border-2 hover:border-white transition-all duration-500 rounded-xl h-10 min-w-40"
+              className="px-2 py-4 border-gray-700 bg-transparent border-2 hover:border-white transition-all duration-500 rounded-xl h-10 md:w-8/12 xs:w-[200px]"
             />
           </div>
-          <div className="flex justify-between items-center gap-4">
+          <div className="md:flex-row xs:flex-col flex justify-between items-center md:gap-4 xs:gap-1">
             <span className="text-xl">Password</span>
             <input
               onChange={(e) => setPassword(e.target.value)}
               type="password"
               placeholder="9876543210"
-              className="px-2 py-4 border-gray-700 bg-transparent border-2 hover:border-white transition-all duration-500 rounded-xl h-10 min-w-40"
+              className="px-2 py-4 border-gray-700 bg-transparent border-2 hover:border-white transition-all duration-500 rounded-xl h-10 md:w-8/12 xs:w-[200px]"
             />
           </div>
           <button
-            className="hover:bg-black hover:text-white border-2 border-gray-700 w-4/12 place-self-center hover:border-white transition-all duration-500 p-1 px-3 rounded-xl"
+            className="hover:bg-black hover:text-white border-2 border-gray-700 w-4/12 min-w-[100px] place-self-center hover:border-white transition-all duration-500 p-1 px-3 rounded-xl"
             style={{ boxShadow: "7px 7px 7px #000000" }}
           >
             Submit
