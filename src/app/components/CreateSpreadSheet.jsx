@@ -70,7 +70,6 @@ const router=useRouter()
       setError("Please provide a name for the spreadsheet and select users.");
       return;
     }
-
     try {
      let route= await axios.post(`${API_URL}/api/file/create-spreadsheet`, {
         spreadSheetName: spreadsheetName,
