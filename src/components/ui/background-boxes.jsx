@@ -30,12 +30,12 @@ export const BoxesCore = ({
         transform: `translate(-40%,-60%) skewX(-48deg) skewY(14deg) scale(0.675) rotate(0deg) translateZ(0)`,
       }}
       className={cn(
-        "absolute left-1/4 p-4 -top-1/4 flex  -translate-x-1/2 -translate-y-1/2 w-full h-full z-0 ",
+        "  absolute left-1/4 p-4 -top-1/4 flex  -translate-x-1/2 -translate-y-1/2 w-full h-full z-0 ",
         className
       )}
       {...rest}>
       {rows.map((_, i) => (
-        <motion.div key={`row` + i} className="w-16 h-8  border-l  border-slate-700 relative">
+        <motion.div key={`row` + i} className="  w-16 h-8  border-l  border-slate-700 relative">
           {cols.map((_, j) => (
             <motion.div
               whileHover={{

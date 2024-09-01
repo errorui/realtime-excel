@@ -1,5 +1,3 @@
-
-
 import NavBarHome from "./NavBarHome";
 import { GridPattern } from "./components/homeGridPattern";
 import DemoVideo from "./components/DemoVideo";
