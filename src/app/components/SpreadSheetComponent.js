@@ -6,11 +6,13 @@ import socket from "./socket";
 import * as XLSX from "xlsx";
 import axios from 'axios';
 import { toast } from "react-toastify";
+import { useAuth } from "../../../context/auth";
 const Spreadsheet = ({
   socket,roomId
 }) => {
   const API_URL= process.env.NEXT_PUBLIC_API_URL;
   const spreadhsheetid= roomId;
+  const {user}= useAuth();
   // -s
   const [cells, setCells] = useState(() =>
     Array(100)
@@ -24,6 +26,7 @@ const Spreadsheet = ({
         })
       )
   );
+  const [spreadsheetName, setSpreadsheetName]= useState('Untitled Spreadsheet');
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,7 +34,8 @@ const Spreadsheet = ({
         const response = await axios.get(`${API_URL}/api/file/spreadsheet/${spreadhsheetid}`);
         
         // Assuming response.data is a 2D array of numbers
-        const fetchedData = response.data.data;
+        const spreadsheetData= response.data.spreadsheet;
+        const fetchedData =spreadsheetData.data;
         // Create a new array with 100 rows and 26 columns
         console.log(fetchedData);
         const paddedData = Array(100).fill().map((_, rowIndex) => 
@@ -45,9 +49,11 @@ const Spreadsheet = ({
             };
           })
         );
-
+        const name= spreadsheetData.name;
+        // console.log(name);
         // Update the cells state with the padded data
         setCells(paddedData);
+        setSpreadsheetName(name);
       } catch (err) {
         console.error(err);
       }
@@ -60,9 +66,27 @@ const Spreadsheet = ({
       Array(26).fill('')
     )
   );
-  const [spreadsheetName, setSpreadsheetName]= useState('Untitled Spreadsheet');
   const [isEditingName, setIsEditingName] = useState(false);
    const isSocketUpdate = useRef(false);
+   const [access, setAccess]= useState(true);
+
+   useEffect(() => {
+    const fetchAccess = async () => {
+      try {
+        const response = await axios.post(`${API_URL}/api/file/getaccess/${spreadhsheetid}`, {
+          email: user.email
+        });
+
+        // Assuming the API returns { writeAccess: true/false }
+        setAccess(response.data.writeAccess);
+      } catch (error) {
+        console.error('Error fetching access:', error);
+        setAccess(false); // Set access to false in case of an error
+      }
+    };
+
+    fetchAccess();
+  }, []);
 
   const handleTableUpdate = useCallback((data) => {
     
@@ -534,7 +558,7 @@ const Spreadsheet = ({
       // Example data you want to send in the request body
       const dataToSend = {
         data: transformedCells,
-        name: 'My Spreadsheet'
+        name: spreadsheetName
       };
   
       // // Send POST request
@@ -718,112 +742,109 @@ const Spreadsheet = ({
   
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
-      {isEditingName ? (
-        <input
-          type="text"
-          value={spreadsheetName}
-          onChange={handleNameChange}
-          onBlur={handleNameBlur}
-          onKeyDown={handleNameKeyDown}
-          autoFocus
-          className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 focus:outline-none"
-        />
-      ) : (
-        <h2
-          className="text-2xl font-bold text-gray-800 mb-4 cursor-pointer"
-          onClick={handleNameClick}
-        >
-          {spreadsheetName}
-        </h2>
-      )}
-      <SpreadSheetNavbar
-        onFilter={handleFilter}
-        onSortAsc={handleSortAsc}
-        onSortDesc={handleSortDesc}
-        onAddColumn={handleAddColumn}
-        onAddRow={handleAddRow}
-        onDeleteColumn={handleDeleteColumn}
-        onDeleteRow={handleDeleteRow}
-        onBold={handleBold}
-        onItalic={handleItalic}
-        onUnderline={handleUnderline}
-        onCellColor={handleCellColor}
-        onSave={handleSave}
-        onExport={handleExport}
-        onImport={handleFileUpload}
-        onGoogleSheetsImport={handleGoogleSheetsImport}
-      />
-      <div className="min-w-max">
-        <table className="border-collapse border border-gray-300" id='myTable'>
-          <thead>
-            <tr>
-              <th className="border border-gray-300 p-1 bg-gray-100 w-20 h-8"></th>
-              {Array.from({ length: columnSize }, (_, i) => (
-                <th
-                  key={i}
-                  className="border border-gray-300 p-1 text-gray-700 bg-gray-100 w-20 h-8 cursor-pointer"
-                  onClick={() => handleColumnHeaderClick(i)}
-                >
-                  {String.fromCharCode(65 + i)}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {cells.map((row, rowIndex) => (
-              <tr key={rowIndex} className="h-8">
-                <th
-                  className="border border-gray-300 p-1 text-gray-700 bg-gray-100 w-20 h-8 cursor-pointer"
-                  onClick={() => handleRowHeaderClick(rowIndex)}
-                >
-                  {rowIndex + 1}
-                </th>
-                {row.map((cell, colIndex) => (
-                  <td
-                    key={colIndex}
-                    className={`border border-gray-300 p-1 w-20 h-8 z-1000 ${isSelected(rowIndex, colIndex) ? "bg-blue-200" : ""
-                      }`}
-                    style={{ backgroundColor: cellColors[rowIndex][colIndex] }}
-                    onMouseDown={() => handleMouseDown(rowIndex, colIndex)}
-                    onMouseOver={() => handleMouseOver(rowIndex, colIndex)}
-                  >
-                    <input
-                      type="text"
-                      value={cell.value==" "? "" : cell.value}
-                      onChange={(e) => handleChange(e, rowIndex, colIndex)}
-                      onKeyDown={(e) => handleKeyDown(e, rowIndex, colIndex)}
-                      className={`w-full h-full text-left bg-transparent focus:outline-none ${cell.bold ? "font-bold" : ""
-                        } ${cell.italic ? "italic" : ""
-                        } ${cell.underline ? "underline" : ""
-                        }`}
-                      ref={(el) =>
-                        (inputRefs.current[rowIndex * cells[0].length + colIndex] = el)
-                      }
-                    />
-                </td>
-
-                ))}
-              </tr>
+  {isEditingName ? (
+    <input
+      type="text"
+      value={spreadsheetName}
+      onChange={handleNameChange}
+      onBlur={handleNameBlur}
+      onKeyDown={handleNameKeyDown}
+      autoFocus
+      className="text-2xl font-bold text-gray-800 mb-4 border-b-2 border-gray-300 focus:outline-none"
+      disabled={!access}  // Disable input when access is false
+    />
+  ) : (
+    <h2
+      className={`text-2xl font-bold text-gray-800 mb-4 cursor-pointer ${!access && "cursor-not-allowed text-gray-500"}`}
+      onClick={access ? handleNameClick : null} // Disable click when access is false
+    >
+      {spreadsheetName}
+    </h2>
+  )}
+  <SpreadSheetNavbar
+    onFilter={access ? handleFilter : null}
+    onSortAsc={access ? handleSortAsc : null}
+    onSortDesc={access ? handleSortDesc : null}
+    onAddColumn={access ? handleAddColumn : null}
+    onAddRow={access ? handleAddRow : null}
+    onDeleteColumn={access ? handleDeleteColumn : null}
+    onDeleteRow={access ? handleDeleteRow : null}
+    onBold={access ? handleBold : null}
+    onItalic={access ? handleItalic : null}
+    onUnderline={access ? handleUnderline : null}
+    onCellColor={access ? handleCellColor : null}
+    onSave={access ? handleSave : null}
+    onExport={access ? handleExport : null}
+    onImport={access ? handleFileUpload : null}
+    onGoogleSheetsImport={access ? handleGoogleSheetsImport : null}
+  />
+  <div className="min-w-max">
+    <table className="border-collapse border border-gray-300" id='myTable'>
+      <thead>
+        <tr>
+          <th className="border border-gray-300 p-1 bg-gray-100 w-20 h-8"></th>
+          {Array.from({ length: columnSize }, (_, i) => (
+            <th
+              key={i}
+              className={`border border-gray-300 p-1 text-gray-700 bg-gray-100 w-20 h-8 ${!access ? "cursor-not-allowed" : "cursor-pointer"}`}
+              onClick={access ? () => handleColumnHeaderClick(i) : null}
+            >
+              {String.fromCharCode(65 + i)}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {cells.map((row, rowIndex) => (
+          <tr key={rowIndex} className="h-8">
+            <th
+              className={`border border-gray-300 p-1 text-gray-700 bg-gray-100 w-20 h-8 ${!access ? "cursor-not-allowed" : "cursor-pointer"}`}
+              onClick={access ? () => handleRowHeaderClick(rowIndex) : null}
+            >
+              {rowIndex + 1}
+            </th>
+            {row.map((cell, colIndex) => (
+              <td
+                key={colIndex}
+                className={`border border-gray-300 p-1 w-20 h-8 z-1000 ${isSelected(rowIndex, colIndex) ? "bg-blue-200" : ""}`}
+                style={{ backgroundColor: cellColors[rowIndex][colIndex] }}
+                onMouseDown={access ? () => handleMouseDown(rowIndex, colIndex) : null}
+                onMouseOver={access ? () => handleMouseOver(rowIndex, colIndex) : null}
+              >
+                <input
+                  type="text"
+                  value={cell.value === " " ? "" : cell.value}
+                  onChange={access ? (e) => handleChange(e, rowIndex, colIndex) : null}
+                  onKeyDown={access ? (e) => handleKeyDown(e, rowIndex, colIndex) : null}
+                  className={`w-full h-full text-left bg-transparent focus:outline-none ${cell.bold ? "font-bold" : ""} ${cell.italic ? "italic" : ""} ${cell.underline ? "underline" : ""}`}
+                  disabled={!access} // Disable input when access is false
+                  ref={(el) => (inputRefs.current[rowIndex * cells[0].length + colIndex] = el)}
+                />
+              </td>
             ))}
-          </tbody>
-        </table>
-        {colorPickerVisible && (
-          <div className="absolute top-0 right-0 p-4">
-            <HexColorPicker
-              color={currentColor}
-              onChange={setCurrentColor}
-            />
-          </div>
-        )}
-         <input
-          type="file"
-          id="fileInput"
-          accept=".csv, .xlsx"
-          style={{ display: "none" }}
-          onChange={handleImport}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    {colorPickerVisible && (
+      <div className="absolute top-0 right-0 p-4">
+        <HexColorPicker
+          color={currentColor}
+          onChange={setCurrentColor}
+          disabled={!access}  // Disable color picker when access is false
         />
       </div>
-    </div>
+    )}
+    <input
+      type="file"
+      id="fileInput"
+      accept=".csv, .xlsx"
+      style={{ display: "none" }}
+      onChange={access ? handleImport : null} // Disable file input when access is false
+    />
+  </div>
+</div>
+
   );
 };
 
