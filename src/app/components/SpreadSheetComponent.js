@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 const Spreadsheet = ({
   socket,roomId
 }) => {
+  const API_URL= process.env.NEXT_PUBLIC_API_URL;
   const spreadhsheetid= roomId;
   // -s
   const [cells, setCells] = useState(() =>
@@ -27,7 +28,7 @@ const Spreadsheet = ({
     const fetchData = async () => {
       try {
         console.log(spreadhsheetid);
-        const response = await axios.get(`http://localhost:4002/api/file/spreadsheet/${spreadhsheetid}`);
+        const response = await axios.get(`${API_URL}/api/file/spreadsheet/${spreadhsheetid}`);
         
         // Assuming response.data is a 2D array of numbers
         const fetchedData = response.data.data;
