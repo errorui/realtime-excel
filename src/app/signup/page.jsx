@@ -54,7 +54,7 @@ const page = () => {
               type="text"
               placeholder="foobar"
               required
-              className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-md h-10 w-fit min-w-40"
+              className=" border-2 border-black bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-md h-10 w-fit min-w-40"
             />
           </div>
           <div className="flex justify-center items-center gap-4">
@@ -64,7 +64,7 @@ const page = () => {
               type="email"
               placeholder="foobar@gmail.com"
               required
-              className="bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-md h-10 w-fit min-w-40"
+              className=" border-2 border-black bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-md h-10 w-fit min-w-40"
             />
           </div>
           <div className="flex justify-center items-center gap-4">
@@ -74,11 +74,11 @@ const page = () => {
               type="password"
               placeholder="9876543210"
               required
-              className="bg-transparent border-2 hover:border-white p-2 border-white/10 transition-all duration-500 rounded-md h-10 w-fit min-w-40"
+              className=" border-2 border-black bg-transparent border-2 hover:border-white p-2 border-white/10 transition-all duration-500 rounded-md h-10 w-fit min-w-40"
             />
           </div>
           <button
-            className="border-2 hover:border-white border-transparent w-4/12 place-self-center transition-all duration-500 p-1 px-3 rounded-xl"
+            className="hover:bg-black hover:text-white duration-500  border-2 hover:border-white border-transparent w-4/12 place-self-center transition-all duration-500 p-1 px-3 rounded-xl"
             style={{ boxShadow: "7px 7px 7px #343434" }}
           >
             Submit

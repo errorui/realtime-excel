@@ -17,7 +17,7 @@ const NavBarHome = () => {
     const handleLogout = async () => {
         try {
           await axios.get(`${API_URL}/api/user/logout`, {withCredentials: true});
-          setUser(null); //Reset user state
+          setUser(null); 
           router.push('/')
         } catch (error) {
           console.error('Logout failed', error)

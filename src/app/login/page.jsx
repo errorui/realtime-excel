@@ -50,7 +50,7 @@ const page = () => {
               type="email"
               onChange={e => setEmail(e.target.value)}
               placeholder="foobar@gmail.com"
-              className="p-1 bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl h-10 w-fit min-w-40"
+              className="p-1 border-2 border-black bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl h-10 w-fit min-w-40"
             />
           </div>
           <div className="flex justify-center items-center gap-4">
@@ -59,11 +59,11 @@ const page = () => {
               onChange={(e) => setPassword(e.target.value)}
               type="password"
               placeholder="9876543210"
-              className="p-1 bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl h-10 w-fit min-w-40"
+              className="border-2 border-black p-1 bg-transparent border-2 hover:border-white border-white/10 transition-all duration-500 rounded-xl h-10 w-fit min-w-40"
             />
           </div>
           <button
-            className="border-2 w-4/12 place-self-center hover:border-white border-transparent transition-all duration-500 p-1 px-3 rounded-xl"
+            className=" hover:bg-black hover:text-white border-2 w-4/12 place-self-center hover:border-white border-transparent transition-all duration-500 p-1 px-3 rounded-xl"
             style={{ boxShadow: "7px 7px 7px #343434" }}
           >
             Submit
