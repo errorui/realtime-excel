@@ -188,7 +188,7 @@ const page = () => {
             </div>
           </div>
         </ModalTrigger>
-        <ModalBody className={"bg-white border-2 border-white"}>
+        <ModalBody className={"bg-black border-2 border-white"}>
           <ModalContent className={" flex flex-col items-center gap-4"}>
             <ScrollShadow
               hideScrollBar
