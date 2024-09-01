@@ -92,6 +92,7 @@
 // export default page;
 
 "use client";
+import axios from 'axios';
 import {
   Dropdown,
   DropdownItem,
@@ -122,9 +123,11 @@ import Link from 'next/link';
 import { useAuth } from "../../../context/auth";
 
 const page = () => {
+  const API_URL= process.env.NEXT_PUBLIC_API_URL;
   const {user}= useAuth();
   const [previousWork, setPreviousWork] = useState([]);
   useEffect(() => {
+    console.log(user);
     if (user && user.projects) {
       // Extract spreadsheetId from user.projects and map to previousWork
       const updatedPreviousWork = user.projects.map(project => ({
@@ -162,11 +165,22 @@ const page = () => {
   // useEffect(()=>{
   //   console.log(userOnpage.projects);
   // }, []);
-
-  const handleDelete = (index) => {
-    const newData = [...data];
-    newData.splice(index, 1);
-    setData(newData);
+  const handleDelete = async (index) => {
+    try {
+      // Send POST request to delete the item
+      console.log(previousWork[index]);
+      const id= previousWork[index].id;
+      const body= {email: user.email}
+       const response= await axios.post(`${API_URL}/api/file/delete/${id}`, body);
+       if(response.status==200){
+        const newPreviousWork = [...previousWork];
+        newPreviousWork.splice(index, 1);
+        setPreviousWork(newPreviousWork);
+       }
+      // Update state to remove the deleted item
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
   };
 
 
@@ -362,7 +376,7 @@ const page = () => {
                   </TableCell>
                   {/* <TableCell>{item.date}</TableCell> */}
                   <TableCell>
-                    <button className="p-1 px-3 rounded-full bg-red-500 hover:bg-red-700 transition-all duration-500" onClick={handleDelete}>
+                    <button className="p-1 px-3 rounded-full bg-red-500 hover:bg-red-700 transition-all duration-500" onClick={()=>{handleDelete(i)}}>
                       Delete
                     </button>
                   </TableCell>
