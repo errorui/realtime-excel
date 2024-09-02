@@ -11,18 +11,31 @@ const Page = () => {
   const [previousWork, setPreviousWork] = useState([]);
   const API_URL= process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
-    if (user && user.projects) {
-      const updatedPreviousWork = user.projects.map((project) => ({
-        id: project.spreadsheetId,
-        name: project.name || "Unnamed Spreadsheet",
-      }));
-      setPreviousWork(updatedPreviousWork);
+    if(user && user.projects){
+      const getProject=async ()=>{
+        const body= {email: user.email};
+        try{
+          const response = await axios.post(`${API_URL}/api/file/getspreadsheetnames`, body);
+          const data= response.data.spreadsheetnamesandIds;
+          console.log(data);
+          const updatedPreviousWork= data.map((spreadsheet)=>({
+            id:spreadsheet.spreadhsheetId,
+            name: spreadsheet.spreadsheetName || 'Untitled Spreadsheet'
+          }));
+          setPreviousWork(updatedPreviousWork);
+        }
+        catch(err){
+          console.log('Error getting the projets', err);
+        }
+      }
+      getProject();
     }
   }, [user]);
 
   const handleDeletePreviousWork = async (index) => {
     try {
       // Send POST request to delete the item
+      console.log(previousWork);
       console.log(previousWork[index]);
       const id= previousWork[index].id;
       const body= {email: user.email}
@@ -51,4 +64,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default Page; 
