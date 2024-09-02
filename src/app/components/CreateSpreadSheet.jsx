@@ -26,6 +26,8 @@ const router=useRouter()
   useEffect(() => {
     if (user) {
       setSelectedUsers([{email:user.email, canWrite:true}]);
+    }else{
+      router.push('/login')
     }
   }, [user]);
   useEffect(() => {

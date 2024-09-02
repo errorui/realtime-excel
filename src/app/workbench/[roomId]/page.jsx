@@ -9,17 +9,19 @@ import Spreadsheet from '../../components/SpreadSheetComponent';
 import socket from '@/app/components/socket';
 import { useAuth } from '../../../../context/auth';
 import AvatarStack from '@/app/components/AvatarStack';
-
+import {useRouter} from 'next/navigation'
 const Page = () => {
   const pathname = usePathname();
   const { user } = useAuth();
-
-  // Initialize avatars as state
+  const router=useRouter()
+  
   const [avatars, setAvatars] = useState([]);
-
-  useEffect(() => {
-    console.log(avatars);
-  }, [avatars]);
+  
+  useEffect(()=>{
+      if(!user){
+          router.push('/login')
+      }
+  },[user])
 
   const roomid = pathname.split("/")[2];
 
@@ -28,7 +30,15 @@ const Page = () => {
       {user && (
         <div>
           <ToastContainer />
+          <div className="flex gap-2">
+          <button className='px-4 py-2 text-slate-800 rounded-xl bg-slate-200 shadow-md font-bold ' onClick={
+            ()=>{
+              router.push('/workbench')
+            }
+          }>back</button>
           <h1>Room ID: {roomid}</h1>
+          </div>
+      
           <AvatarStack avatars={avatars} />
           <CursorTracker
             roomId={roomid}

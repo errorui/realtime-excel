@@ -30,14 +30,14 @@ const Spreadsheet = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(spreadhsheetid);
+       
         const response = await axios.get(`${API_URL}/api/file/spreadsheet/${spreadhsheetid}`);
         
         // Assuming response.data is a 2D array of numbers
         const spreadsheetData= response.data.spreadsheet;
         const fetchedData =spreadsheetData.data;
         // Create a new array with 100 rows and 26 columns
-        console.log(fetchedData);
+        
         const paddedData = Array(100).fill().map((_, rowIndex) => 
           Array(26).fill().map((_, colIndex) => {
             const value = fetchedData[rowIndex]?.[colIndex] ?? '';

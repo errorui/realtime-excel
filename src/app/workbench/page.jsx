@@ -5,19 +5,22 @@ import CreateSpreadsheet from "../components/CreateSpreadSheet";
 import PreviousWork from "../components/PreviousWork";
 import NavBarHome from "../NavBarHome";
 import axios from "axios";
+import {useRouter} from 'next/navigation'
+import { toast } from "react-toastify";
 
 const Page = () => {
   const { user } = useAuth();
+  const router=useRouter()
   const [previousWork, setPreviousWork] = useState([]);
   const API_URL= process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
-    if(user && user.projects){
+    if(user){
       const getProject=async ()=>{
         const body= {email: user.email};
         try{
           const response = await axios.post(`${API_URL}/api/file/getspreadsheetnames`, body);
           const data= response.data.spreadsheetnamesandIds;
-          console.log(data);
+          // console.log(data);
           const updatedPreviousWork= data.map((spreadsheet)=>({
             id:spreadsheet.spreadhsheetId,
             name: spreadsheet.spreadsheetName || 'Untitled Spreadsheet'
@@ -30,7 +33,11 @@ const Page = () => {
       }
       getProject();
     }
-  }, [user]);
+    else{
+     
+      router.push('/login')
+    }
+  }, []);
 
   const handleDeletePreviousWork = async (index) => {
     try {
