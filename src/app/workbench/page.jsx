@@ -33,11 +33,8 @@ const Page = () => {
       }
       getProject();
     }
-    else{
-     
-      router.push('/login')
-    }
-  }, []);
+  
+  }, [user]);
 
   const handleDeletePreviousWork = async (index) => {
     try {

@@ -17,12 +17,15 @@ const Page = () => {
   
   const [avatars, setAvatars] = useState([]);
   
-  useEffect(()=>{
-      if(!user){
-          router.push('/login')
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!user) {
+        router.push('/login');
       }
-  },[user])
+    }, 100);
 
+    return () => clearTimeout(timer); 
+  }, [user]);
   const roomid = pathname.split("/")[2];
 
   return (

@@ -24,11 +24,15 @@ const router=useRouter()
   const [searchQuery, setSearchQuery] = useState("");
   const [error, setError] = useState("");
   useEffect(() => {
-    if (user) {
-      setSelectedUsers([{email:user.email, canWrite:true}]);
-    }else{
-      router.push('/login')
-    }
+    const timer = setTimeout(() => {
+      if (user) {
+        setSelectedUsers([{ email: user.email, canWrite: true }]);
+      } else {
+        router.push('/login');
+      }
+    }, 200);
+
+    return () => clearTimeout(timer); 
   }, [user]);
   useEffect(() => {
     const fetchUsers = async () => {
@@ -52,6 +56,16 @@ const router=useRouter()
   };
 
   const handleSelectUser = (user) => {
+   
+    const isAlreadySelected = selectedUsers.some(
+      (selectedUser) => selectedUser.email === user.email
+    );
+
+    if (isAlreadySelected) {
+      alert("User is already selected.");
+      return;
+    }
+
     const hasWritePermission = confirm("Give write permission to this user?");
     const newUser = {
       email: user.email,
