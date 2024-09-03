@@ -596,8 +596,11 @@ useEffect(() => {
   };
   
   const handleExport = () => {
+    // const rows = cells.map(row =>
+    //   row.map(cell => `"${cell.value.replace(/"/g, '""')}"`).join(',')
+    // );
     const rows = cells.map(row =>
-      row.map(cell => `"${cell.value.replace(/"/g, '""')}"`).join(',')
+      row.map(cell => `"${String(cell?.value || '').replace(/"/g, '""')}"`).join(',')
     );
     const csvContent = rows.join('\n');
 
