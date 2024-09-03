@@ -10,10 +10,15 @@ import { useAuth } from "../../../context/auth";
 const Spreadsheet = ({
   socket,roomId
 }) => {
+  // infor
   const API_URL= process.env.NEXT_PUBLIC_API_URL;
   const spreadhsheetid= roomId;
+
+
+// user
   const {user}= useAuth();
-  // -s
+
+  // state mangemnent
   const [cells, setCells] = useState(() =>
     Array(100)
       .fill()
@@ -27,74 +32,86 @@ const Spreadsheet = ({
       )
   );
   const [spreadsheetName, setSpreadsheetName]= useState('Untitled Spreadsheet');
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-       
-        const response = await axios.get(`${API_URL}/api/file/spreadsheet/${spreadhsheetid}`);
-        
-        // Assuming response.data is a 2D array of numbers
-        const spreadsheetData= response.data.spreadsheet;
-        const fetchedData =spreadsheetData.data;
-        // Create a new array with 100 rows and 26 columns
-        
-        const paddedData = Array(100).fill().map((_, rowIndex) => 
-          Array(26).fill().map((_, colIndex) => {
-            const value = fetchedData[rowIndex]?.[colIndex] ?? '';
-            return {
-              value: value,
-              bold: false, // Default value, can be customized later
-              italic: false, // Default value, can be customized later
-              underline: false, // Default value, can be customized later
-            };
-          })
-        );
-        const name= spreadsheetData.name;
-        // console.log(name);
-        // Update the cells state with the padded data
-        setCells(paddedData);
-        setSpreadsheetName(name);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchData();
-  }, []); // Empty dependency array to run only on mount
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [columnSize, setColumnSize]= useState(26);
+  const [selectedCells, setSelectedCells] = useState({
+    start: null,
+    end: null,
+  });
+  const [isSelecting, setIsSelecting] = useState(false);
   const [cellColors, setCellColors] = useState(
     Array(100).fill().map(() =>
       Array(26).fill('')
     )
   );
-  const [isEditingName, setIsEditingName] = useState(false);
-   const isSocketUpdate = useRef(false);
-   const [access, setAccess]= useState(true);
+  const [colorPickerVisible, setColorPickerVisible] = useState(false);
+  const [currentColor, setCurrentColor] = useState("#ffffff");
+  const [access, setAccess]= useState(true);
+  const inputRefs = useRef([]);
+  const [showChart, setShowChart] = useState(false);
+// fetch data
+useEffect(() => {
+  const fetchSpreadsheetData = async () => {
+    try {
+      // Fetch spreadsheet data
+      const response = await axios.get(`${API_URL}/api/file/spreadsheet/${spreadhsheetid}`);
+      const spreadsheetData = response.data.spreadsheet;
+      const fetchedData = spreadsheetData.data;
 
-   useEffect(() => {
-    const fetchAccess = async () => {
-      try {
-        const response = await axios.post(`${API_URL}/api/file/getaccess/${spreadhsheetid}`, {
-          email: user.email
-        });
+      // Create a new array with 100 rows and 26 columns
+      const paddedData = Array(100)
+        .fill()
+        .map((_, rowIndex) =>
+          Array(26)
+            .fill()
+            .map((_, colIndex) => {
+              const value = fetchedData[rowIndex]?.[colIndex] ?? '';
+              return {
+                value: value,
+                bold: false,
+                italic: false,
+                underline: false,
+              };
+            })
+        );
 
-        // Assuming the API returns { writeAccess: true/false }
-        setAccess(response.data.writeAccess);
-      } catch (error) {
-        console.error('Error fetching access:', error);
-        setAccess(false); // Set access to false in case of an error
-      }
-    };
+      const name = spreadsheetData.name;
 
-    fetchAccess();
-  }, []);
+      // Update state with fetched data
+      isSocketUpdate.current = true;
+      setCells(paddedData);
+      setSpreadsheetName(name);
 
+      // Fetch access rights
+      const accessResponse = await axios.post(`${API_URL}/api/file/getaccess/${spreadhsheetid}`, {
+        email: user.email
+      });
+
+      setAccess(accessResponse.data.writeAccess);
+    } catch (error) {
+      console.error('Error fetching data or access:', error);
+      setAccess(false); // Set access to false in case of an error
+    }
+  };
+
+  fetchSpreadsheetData();
+}, [user, spreadhsheetid]); 
+
+// color change ig
+useEffect(() => {
+  if (colorPickerVisible) {
+    applyFormattingToSelectedCells((cell) => cell, currentColor);
+  }
+}, [currentColor]);
+// callback
+  const isSocketUpdate = useRef(false);
   const handleTableUpdate = useCallback((data) => {
     
     isSocketUpdate.current = true;
     setCells(data.cells);
     setCellColors(data.cellColors);
   }, []);
-
+// socket logic
   useEffect(() => {
     if (roomId) {
       socket.emit('join room', roomId);
@@ -114,28 +131,10 @@ const Spreadsheet = ({
     }
     isSocketUpdate.current = false;
   }, [cells, cellColors, roomId]);
-  // -s
-  const [columnSize, setColumnSize]= useState(26);
-
-  // no-s
-  const [selectedCells, setSelectedCells] = useState({
-    start: null,
-    end: null,
-  });
  
-  const [isSelecting, setIsSelecting] = useState(false);
-
-  const [colorPickerVisible, setColorPickerVisible] = useState(false);
+// utility function
 
 
-  const [currentColor, setCurrentColor] = useState("#ffffff");
-
-
-  const inputRefs = useRef([]);
-  const [showChart, setShowChart] = useState(false);
-  // useEffect(() => {
-  //   console.log("Selected cells:", selectedCells);
-  // }, [selectedCells]);
   const toggleChart = () => {
     console.log('Toggle chart')
     setShowChart(!showChart);
@@ -308,11 +307,7 @@ const Spreadsheet = ({
     setColorPickerVisible(!colorPickerVisible);
   };
 
-  useEffect(() => {
-    if (colorPickerVisible) {
-      applyFormattingToSelectedCells((cell) => cell, currentColor);
-    }
-  }, [currentColor]);
+ 
   const toggleColorPicker = () => {
     setColorPickerVisible(!colorPickerVisible);
   };
@@ -548,6 +543,39 @@ const Spreadsheet = ({
       alert("Invalid column number.");
     }
   }
+  const handleRowHeaderClick = (rowIndex) => {
+    setSelectedCells({
+      start: { rowIndex, colIndex: 0 },
+      end: { rowIndex, colIndex: cells[0].length - 1 },
+    });
+  };
+
+  const handleColumnHeaderClick = (colIndex) => {
+    console.log(colIndex);
+    setSelectedCells({
+      start: { rowIndex: 0, colIndex },
+      end: { rowIndex: cells.length - 1, colIndex },
+    });
+  };
+  const handleNameClick = () => {
+    setIsEditingName(true);
+  };
+
+  const handleNameChange = (e) => {
+    setSpreadsheetName(e.target.value);
+  };
+
+  const handleNameBlur = () => {
+    setIsEditingName(false);
+  };
+
+  const handleNameKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === 'Escape') {
+      setIsEditingName(false);
+    }
+  };
+
+  // export or import /save
   const handleSave = async () => {
     try {
       // Transform cells to include only the 'value' property
@@ -600,20 +628,7 @@ const Spreadsheet = ({
 
 
 
-  const handleRowHeaderClick = (rowIndex) => {
-    setSelectedCells({
-      start: { rowIndex, colIndex: 0 },
-      end: { rowIndex, colIndex: cells[0].length - 1 },
-    });
-  };
-
-  const handleColumnHeaderClick = (colIndex) => {
-    console.log(colIndex);
-    setSelectedCells({
-      start: { rowIndex: 0, colIndex },
-      end: { rowIndex: cells.length - 1, colIndex },
-    });
-  };
+  
   const handleImport = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -688,23 +703,7 @@ const Spreadsheet = ({
   const handleFileUpload= ()=>{
     document.getElementById("fileInput").click();
   }
-  const handleNameClick = () => {
-    setIsEditingName(true);
-  };
 
-  const handleNameChange = (e) => {
-    setSpreadsheetName(e.target.value);
-  };
-
-  const handleNameBlur = () => {
-    setIsEditingName(false);
-  };
-
-  const handleNameKeyDown = (e) => {
-    if (e.key === 'Enter' || e.key === 'Escape') {
-      setIsEditingName(false);
-    }
-  };
   const handleGoogleSheetsImport = async () => {
     try {
       const googleSheetsUrl = prompt("Please enter the Google Sheets API URL:");
