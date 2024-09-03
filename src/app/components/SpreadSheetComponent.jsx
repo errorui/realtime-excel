@@ -313,13 +313,6 @@ useEffect(() => {
   };
 
 
-
-  // const handleFilter = () => {
-  //   console.log("Filter clicked");
-  // };
-
-
-
   const handleFilter = () => {
     // Prompt the user for filter parameters
     const colIndex = parseInt(prompt("Enter the column number to filter (starting from 1):"), 10) - 1;
