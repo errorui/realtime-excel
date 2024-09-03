@@ -14,7 +14,6 @@ const Spreadsheet = ({
   const API_URL= process.env.NEXT_PUBLIC_API_URL;
   const spreadhsheetid= roomId;
 
-
 // user
   const {user}= useAuth();
 
@@ -700,6 +699,38 @@ useEffect(() => {
     document.getElementById("fileInput").click();
   }
 
+  // const handleGoogleSheetsImport = async () => {
+  //   try {
+  //     const googleSheetsUrl = prompt("Please enter the Google Sheets API URL:");
+  
+  //     if (!googleSheetsUrl) {
+  //       alert("No URL provided. Import cancelled.");
+  //       return;
+  //     }
+  //     const response = await fetch(googleSheetsUrl);
+  //     const text = await response.text();
+  //     const rows = text.split("\n");
+  //     const parsedData = rows.map((row) => row.split(","));
+  //     const updatedCells = cells.map((row, rowIndex) =>
+  //       row.map((cell, colIndex) => {
+  //         if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+  //           return {
+  //             ...cell,
+  //             value: parsedData[rowIndex][colIndex],
+  //             bold: false,
+  //             italic: false,
+  //             underline: false,
+  //           };
+  //         }
+  //         return cell;
+  //       })
+  //     );
+  
+  //     setCells(updatedCells);
+  //   } catch (error) {
+  //     console.error('Error fetching Google Sheets data:', error);
+  //   }
+  // };
   const handleGoogleSheetsImport = async () => {
     try {
       const googleSheetsUrl = prompt("Please enter the Google Sheets API URL:");
@@ -709,31 +740,45 @@ useEffect(() => {
         return;
       }
   
-      const response = await fetch(googleSheetsUrl);
-      const text = await response.text();
-      const rows = text.split("\n");
-      const parsedData = rows.map((row) => row.split(","));
-  
-      const updatedCells = cells.map((row, rowIndex) =>
-        row.map((cell, colIndex) => {
-          if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
-            return {
-              ...cell,
-              value: parsedData[rowIndex][colIndex],
-              bold: false,
-              italic: false,
-              underline: false,
-            };
-          }
-          return cell;
-        })
+      // Step 1: Clear all cell values
+      const clearedCells = cells.map((row) =>
+        row.map((cell) => ({
+          ...cell,
+          value: "",       // Clear the value of the cell
+          bold: false,
+          italic: false,
+          underline: false,
+        }))
       );
   
-      setCells(updatedCells);
+      setCells(clearedCells); // Update the state with cleared cells
+  
+      // Step 2: Fetch new data and update cells after clearing
+      setTimeout(async () => {
+        const response = await fetch(googleSheetsUrl);
+        const text = await response.text();
+        const rows = text.split("\n");
+        const parsedData = rows.map((row) => row.split(","));
+  
+        const updatedCells = clearedCells.map((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            if (parsedData[rowIndex] && parsedData[rowIndex][colIndex]) {
+              return {
+                ...cell,
+                value: parsedData[rowIndex][colIndex], // Update with new data
+              };
+            }
+            return cell;
+          })
+        );
+  
+        setCells(updatedCells); // Update the state with new data from Google Sheets
+      }, 0); // Delay to ensure the cells are cleared first
     } catch (error) {
       console.error('Error fetching Google Sheets data:', error);
     }
   };
+  
   
   return (
     <div className="overflow-x-auto spreadsheet" onMouseUp={handleMouseUp}>
